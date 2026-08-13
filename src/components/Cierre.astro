@@ -1,0 +1,74 @@
+---
+import Logo from './Logo.astro';
+import { whatsapp, WHATSAPP_LEGIBLE, INSTAGRAM, INSTAGRAM_URL, SITIO } from '../config';
+---
+
+<!--
+  El cierre: la hoja que levantó el naranja. El texto va en tinta oscura sobre
+  ella — blanco sobre #F8831D mide 2,56:1 y no pasa AA en ningún tamaño.
+-->
+<section
+  class="relative px-6 py-12 text-center sm:px-8 sm:py-24"
+  data-tinta="naranja"
+  data-gota-x="0.5"
+  data-gota-y="0.5"
+  data-gota-fuerza="1.6"
+>
+  <div class="hoja-tinta hoja-tinta-clara mx-auto max-w-[1240px] bg-naranja px-6 py-14 sm:px-14 sm:py-24">
+    <div class="relative mx-auto flex max-w-[52rem] flex-col items-center">
+    <Logo tono="tinta" descriptor={false} class="marca-sello" />
+
+    <h2
+      class="mt-9 font-display text-[clamp(2.1rem,5.5vw,3.5rem)] font-700 leading-[1.05] tracking-[-0.03em] text-azul-hondo"
+    >
+      Dinos para quién es y nosotros buscamos el libro.
+    </h2>
+
+    <p class="mt-6 max-w-[52ch] font-texto text-guia leading-relaxed text-azul-hondo/85">
+      Escríbenos al {WHATSAPP_LEGIBLE}. Contestamos como te contestaría alguien que también anda
+      buscando qué leer.
+    </p>
+
+    <a
+      href={whatsapp('Hola Palsabi 👋 Quisiera que me ayuden a escoger un libro.')}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group mt-11 inline-flex items-center gap-3 rounded-full bg-azul-hondo px-9 py-5 font-display text-guia font-700 text-agua shadow-[0_3px_6px_rgba(20,12,2,0.22),0_24px_46px_-20px_rgba(12,20,28,0.85)] transition-[transform,box-shadow] duration-300 ease-gota hover:-translate-y-0.5 hover:shadow-[0_4px_8px_rgba(20,12,2,0.26),0_30px_56px_-22px_rgba(12,20,28,0.95)]"
+    >
+      <svg class="h-[1.2em] w-[1.2em] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.24 8.24 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24Zm-2.6 4.02c-.14 0-.36.05-.55.26-.19.2-.72.7-.72 1.72 0 1.01.74 1.99.84 2.12.1.14 1.43 2.18 3.46 3.06.48.21.86.33 1.16.43.49.15.93.13 1.28.08.39-.06 1.2-.49 1.37-.97.17-.47.17-.88.12-.96-.05-.09-.19-.14-.39-.24-.2-.1-1.2-.59-1.38-.66-.19-.07-.32-.1-.46.1-.14.2-.53.66-.65.8-.12.14-.24.15-.44.05-.2-.1-.86-.32-1.63-1.01a6.1 6.1 0 0 1-1.13-1.4c-.12-.2-.01-.31.09-.41.09-.09.2-.24.3-.36.1-.12.13-.2.2-.34.07-.14.03-.26-.02-.36-.05-.1-.44-1.11-.62-1.52-.16-.39-.33-.34-.45-.35h-.38Z" />
+      </svg>
+      Escríbenos por WhatsApp
+      <svg class="h-[0.95em] w-[0.95em] shrink-0 transition-transform duration-300 ease-gota group-hover:translate-x-1" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 8h10M9 4l4 4-4 4" />
+      </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer class="relative overflow-hidden bg-azul-hondo px-5 py-10 sm:px-8">
+  <div
+    class="mx-auto flex max-w-[1240px] flex-col items-center justify-between gap-5 text-center sm:flex-row sm:text-left"
+  >
+    <p class="rotulo text-agua/60">
+      {SITIO.nombre} · {SITIO.descriptor} — Ecuador · antes {SITIO.nombreAnterior}
+    </p>
+    <div class="flex items-center gap-5">
+      <a
+        href={INSTAGRAM_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="rounded font-texto text-menudo text-agua/80 transition-colors duration-200 hover:text-agua"
+        >@{INSTAGRAM}</a
+      >
+      <a
+        href={whatsapp('Hola Palsabi 👋')}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="rounded font-texto text-menudo text-agua/80 transition-colors duration-200 hover:text-agua"
+        >{WHATSAPP_LEGIBLE}</a
+      >
+    </div>
+  </div>
+</footer>

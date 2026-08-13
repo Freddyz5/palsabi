@@ -1,0 +1,103 @@
+---
+/**
+ * El logotipo de Palsabi, redibujado en vectores a partir de brand/ref-3.png.
+ * Los archivos de marca son capturas de pantalla; esta es la versión escalable.
+ * Si aparece el original en vector, reemplaza este trazado — no lo rediseñes.
+ */
+interface Props {
+  /** Muestra la placa "Librería Cristiana" bajo el nombre. */
+  descriptor?: boolean;
+  /** Tinta del nombre. Sobre el naranja de marca va en azul profundo. */
+  tono?: 'naranja' | 'blanco' | 'tinta';
+  /** El sello apilado del logotipo, o la versión en fila para la cabecera. */
+  direccion?: 'columna' | 'fila';
+  class?: string;
+}
+
+const {
+  descriptor = true,
+  tono = 'naranja',
+  direccion = 'columna',
+  class: clase = '',
+} = Astro.props;
+
+// Sobre el naranja de marca el logotipo va en tinta azul: el naranja del
+// wordmark sobre naranja de fondo desaparece.
+const tintaMarca = tono === 'blanco' ? '#FFFFFF' : tono === 'tinta' ? '#16293A' : '#F8831D';
+const colorNombre = tintaMarca;
+const colorPlaca =
+  tono === 'blanco' ? 'rgba(255,255,255,0.16)' : tono === 'tinta' ? '#16293A' : '#4F4F4F';
+const colorPlacaTexto = tono === 'tinta' ? '#F4F2EE' : '#FFFFFF';
+---
+
+<span
+  class:list={[
+    'inline-flex',
+    direccion === 'fila' ? 'flex-row items-center gap-[0.42em]' : 'flex-col items-center',
+    clase,
+  ]}
+>
+  <svg
+    class:list={['h-auto', direccion === 'fila' ? 'w-[1.35em]' : 'w-[1.9em]']}
+    viewBox="0 0 120 96"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <!-- Cantos del libro -->
+    <path
+      fill={tintaMarca}
+      d="M6 30c0-3.3 2.7-6 6-6h8c3.3 0 6 2.7 6 6v54H6V30Z"></path>
+    <path
+      fill={tintaMarca}
+      d="M94 30c0-3.3 2.7-6 6-6h8c3.3 0 6 2.7 6 6v54H94V30Z"></path>
+    <!-- Hojas abiertas -->
+    <path
+      fill={tono === 'naranja' ? '#FFFFFF' : 'transparent'}
+      stroke={tono === 'naranja' ? '#4F4F4F' : tintaMarca}
+      stroke-width="3.4"
+      stroke-linejoin="round"
+      d="M60 26.5C50.5 17.8 38.8 13.6 26 12.6v58.2c12.8 1 24.5 5.2 34 13.9V26.5Z"></path>
+    <path
+      fill={tono === 'naranja' ? '#FFFFFF' : 'transparent'}
+      stroke={tono === 'naranja' ? '#4F4F4F' : tintaMarca}
+      stroke-width="3.4"
+      stroke-linejoin="round"
+      d="M60 26.5C69.5 17.8 81.2 13.6 94 12.6v58.2c-12.8 1-24.5 5.2-34 13.9V26.5Z"></path>
+    <!-- Base -->
+    <path
+      fill={tintaMarca}
+      d="M6 78h108v10c0 3.3-2.7 6-6 6H12c-3.3 0-6-2.7-6-6V78Z"></path>
+  </svg>
+
+  <span
+    class:list={[
+      'flex',
+      direccion === 'fila' ? 'flex-col items-start gap-[0.14em]' : 'contents',
+    ]}
+  >
+    <span
+      class:list={[
+        'font-display font-700 leading-[0.9] tracking-[-0.03em]',
+        direccion === 'fila' ? 'text-[1.28em]' : 'text-[1.62em] mt-[0.12em]',
+      ]}
+      style={`color:${colorNombre}`}>Palsabi</span
+    >
+
+    {
+      descriptor && (
+        <span
+          class:list={[
+            'rotulo rounded-[0.28em]',
+            direccion === 'fila'
+              ? 'px-[0.5em] py-[0.22em] text-[0.42em] tracking-[0.1em]'
+              : 'mt-[0.28em] px-[0.62em] py-[0.28em] text-[0.42em] tracking-[0.11em]',
+          ]}
+          style={`background:${colorPlaca};color:${colorPlacaTexto}`}
+        >
+          Librería Cristiana
+        </span>
+      )
+    }
+  </span>
+</span>

@@ -1,0 +1,68 @@
+---
+import Boton from './Boton.astro';
+import { whatsapp, STAND_DOMINICAL, INSTAGRAM, INSTAGRAM_URL } from '../config';
+---
+
+<!--
+  La corriente honda, como hoja entintada y no como franja a sangre: el agua
+  sigue corriendo por encima y por debajo, sin costura que cortar, y el texto
+  vuelve a apoyarse en papel en vez de flotar sobre la corriente.
+-->
+<section
+  id="stand"
+  class="relative px-5 py-16 sm:px-8 sm:py-24"
+  data-tinta="azul"
+  data-gota-x="0.42"
+  data-gota-y="0.58"
+  data-gota-fuerza="1.4"
+>
+  <div class="hoja-tinta mx-auto max-w-[1240px] bg-azul px-7 py-14 sm:px-14 sm:py-20">
+    {/*
+      Dos columnas: el titular ocupa la mitad izquierda y el resto vive en la
+      derecha. Estrechar la hoja hasta el texto rompía la medida de la página;
+      lo que tiene que llenar el ancho es el contenido, no al revés.
+    */}
+    <div class="relative grid gap-x-14 gap-y-8 lg:grid-cols-2 lg:items-center">
+      <h2 class="text-titulo font-700 text-agua">Cada domingo estamos con la mesa puesta</h2>
+
+      <div>
+        <p class="max-w-[46ch] font-texto text-guia leading-relaxed text-agua/85">
+          Además del chat, armamos nuestro stand todos los domingos en {STAND_DOMINICAL}. Ahí puedes
+          hojear antes de decidir, que para escoger un libro sigue siendo lo mejor.
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center gap-3.5">
+        <Boton
+          href={whatsapp(
+            'Hola Palsabi 👋 ¿Dónde queda exactamente el stand del domingo y a qué hora están?',
+          )}
+          variante="tinta"
+          tamano="grande"
+        >
+          Pregúntanos la ubicación
+        </Boton>
+        <a
+          href={INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group inline-flex items-center gap-2.5 rounded-full px-6 py-4 font-display text-cuerpo font-600 text-agua/85 ring-[1.5px] ring-inset ring-agua/25 transition-[color,box-shadow,background-color] duration-300 ease-gota hover:bg-agua/8 hover:text-agua hover:ring-agua/55"
+        >
+          <svg
+            class="h-[1.15em] w-[1.15em] shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+            <circle cx="12" cy="12" r="4"></circle>
+            <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"></circle>
+          </svg>
+          @{INSTAGRAM}
+        </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

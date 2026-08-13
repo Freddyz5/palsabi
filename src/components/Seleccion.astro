@@ -1,0 +1,259 @@
+---
+import { LIBROS } from '../data/libros';
+import { whatsapp } from '../config';
+import Boton from './Boton.astro';
+---
+
+<section
+  id="seleccion"
+  class="relative px-5 py-20 sm:px-8 sm:py-28"
+  data-tinta="amarillo"
+  data-gota-x="0.5"
+  data-gota-y="0.42"
+>
+  <div class="mx-auto max-w-[1240px]">
+    <div class="margen-quieto tira max-w-[46rem] px-7 py-8 sm:px-10 sm:py-10">
+      <h2 class="text-titulo font-700 text-azul">Tres que nos gusta recomendar</h2>
+      <p class="mt-4 max-w-[52ch] font-texto text-guia leading-relaxed text-azul/75">
+        No somos un catálogo infinito. Elegimos pocos y los conocemos: por eso podemos decirte cuál
+        le sirve a quién. Marca los que te interesan y te llegan escritos al chat.
+      </p>
+      <p class="rotulo mt-6 text-azul-suave">
+        Precio y disponibilidad se confirman por WhatsApp
+      </p>
+    </div>
+
+    {/*
+      Nada de tres tarjetas iguales: eso es la parrilla de portadas que la
+      tesis de esta página rechaza por nombre. Los libros flotan directamente
+      sobre el agua, a escalas distintas y a alturas distintas —como tinta que
+      se soltó en momentos distintos— y solo el texto se apoya en papel.
+    */}
+    <ul class="mt-14 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-12 lg:gap-y-24">
+      {
+        LIBROS.map((libro, i) => (
+          <li
+            class:list={[
+              'lg:flex lg:flex-col',
+              // Los libros se quedan en los dos tercios izquierdos: la isla de
+              // tinta vive a la derecha y una portada a todo color encima del
+              // plumón saturado se pierde. El agua se queda con su lado.
+              // Dos a la izquierda y el tercero metido en la isla de tinta,
+              // sobre la cola plumeada y no sobre el núcleo: el marmoleado
+              // vuelve a ser el campo donde están los libros, no un adorno
+              // aparcado en el margen derecho.
+              i === 0 && 'lg:col-span-4 lg:col-start-1',
+              i === 1 && 'lg:col-span-4 lg:col-start-5 lg:mt-28',
+              i === 2 && 'lg:col-span-3 lg:col-start-9 lg:mt-4',
+            ]}
+          >
+            <article
+              class="group/libro flex h-full flex-col"
+              data-libro={libro.id}
+              data-tinta-libro={libro.tinta}
+            >
+              <div
+                class:list={[
+                  'flex items-end',
+                  i === 0 ? 'h-[22rem]' : i === 1 ? 'h-[17rem]' : 'h-[15rem]',
+                ]}
+              >
+                <img
+                  src={libro.portada}
+                  alt={`Portada de ${libro.titulo}`}
+                  width="290"
+                  height="352"
+                  loading="lazy"
+                  decoding="async"
+                  class="max-h-full w-auto object-contain drop-shadow-[0_18px_28px_rgba(22,41,58,0.34)] transition-transform duration-500 ease-gota group-hover/libro:-translate-y-2"
+                />
+              </div>
+
+              <div class="margen-quieto etiqueta mt-6 flex flex-1 flex-col px-6 pt-6 pb-6">
+                <h3 class="font-display text-rubro font-600 leading-[1.15] tracking-[-0.02em] text-azul">
+                  {libro.titulo}
+                </h3>
+                <p class="mt-2 font-texto text-menudo leading-snug text-azul-suave">{libro.autor}</p>
+
+                <p class="mt-4 font-texto text-cuerpo leading-relaxed text-azul/80">
+                  {libro.bajada}
+                </p>
+                <p class="mt-3 font-texto text-cuerpo leading-relaxed text-naranja-texto">
+                  {libro.para}
+                </p>
+
+                <button
+                  type="button"
+                  class="boton-anadir mt-6 flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 font-display text-cuerpo font-600 ring-[1.5px] ring-inset transition-all duration-300 ease-gota"
+                  data-anadir={libro.id}
+                  data-titulo={libro.titulo}
+                  aria-pressed="false"
+                >
+                  <span class="icono-mas grid h-[1.15em] w-[1.15em] place-items-center">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+                      <path d="M8 3v10M3 8h10" />
+                    </svg>
+                  </span>
+                  <span class="icono-listo hidden h-[1.15em] w-[1.15em] place-items-center">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M3.5 8.5l3 3 6-7" />
+                    </svg>
+                  </span>
+                  <span class="etiqueta-anadir">Añadir a mi pedido</span>
+                </button>
+              </div>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="margen-quieto tira mt-20 flex flex-wrap items-center gap-x-8 gap-y-5 px-7 py-7 sm:px-9">
+      <p class="max-w-[44ch] font-texto text-cuerpo leading-relaxed text-azul/75">
+        Tenemos más de los que caben aquí. Cuéntanos qué buscas y te decimos qué hay, cuánto cuesta
+        y si vale más la pena otro título.
+      </p>
+      <Boton
+        href={whatsapp('Hola Palsabi 👋 ¿Qué otros títulos tienen disponibles?')}
+        variante="contorno"
+      >
+        Preguntar por otros títulos
+      </Boton>
+    </div>
+  </div>
+</section>
+
+<!-- La bandeja: los libros que fuiste soltando en la cuenca, listos para enviar. -->
+<div
+  id="bandeja"
+  class="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-4 pb-4 opacity-0 translate-y-6 transition-[opacity,transform] duration-500 ease-gota sm:px-6 sm:pb-6"
+  aria-live="polite"
+>
+  <div
+    class="hoja-tinta pointer-events-auto mx-auto flex max-w-[42rem] flex-wrap items-center justify-between gap-4 bg-azul px-5 py-4 shadow-[0_4px_10px_rgba(9,20,29,0.22),0_26px_54px_-20px_rgba(9,20,29,0.7)] sm:px-6"
+  >
+    <p class="font-texto text-cuerpo leading-snug text-agua/85">
+      <span id="bandeja-cuenta" class="font-display font-600 text-agua">0 libros</span>
+      <span class="block text-agua/60" id="bandeja-lista"></span>
+    </p>
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        id="bandeja-vaciar"
+        class="rounded-full px-4 py-2.5 font-texto text-menudo font-500 text-agua/65 transition-colors duration-200 hover:bg-agua/10 hover:text-agua"
+      >
+        Vaciar
+      </button>
+      <a
+        id="bandeja-enviar"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group inline-flex items-center gap-2.5 rounded-full bg-naranja px-6 py-3 font-display text-cuerpo font-600 text-azul-hondo shadow-[0_2px_4px_rgba(89,42,4,0.25)] transition-[background-color,transform] duration-300 ease-gota hover:bg-[#ff9836] hover:-translate-y-0.5"
+      >
+        <svg class="h-[1.15em] w-[1.15em] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.24 8.24 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24Zm-2.6 4.02c-.14 0-.36.05-.55.26-.19.2-.72.7-.72 1.72 0 1.01.74 1.99.84 2.12.1.14 1.43 2.18 3.46 3.06.48.21.86.33 1.16.43.49.15.93.13 1.28.08.39-.06 1.2-.49 1.37-.97.17-.47.17-.88.12-.96-.05-.09-.19-.14-.39-.24-.2-.1-1.2-.59-1.38-.66-.19-.07-.32-.1-.46.1-.14.2-.53.66-.65.8-.12.14-.24.15-.44.05-.2-.1-.86-.32-1.63-1.01a6.1 6.1 0 0 1-1.13-1.4c-.12-.2-.01-.31.09-.41.09-.09.2-.24.3-.36.1-.12.13-.2.2-.34.07-.14.03-.26-.02-.36-.05-.1-.44-1.11-.62-1.52-.16-.39-.33-.34-.45-.35h-.38Z" />
+        </svg>
+        Enviar al chat
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .boton-anadir {
+    color: var(--color-azul);
+    --tw-ring-color: color-mix(in oklab, var(--color-azul) 28%, transparent);
+  }
+  .boton-anadir:hover {
+    --tw-ring-color: color-mix(in oklab, var(--color-azul) 62%, transparent);
+    background: color-mix(in oklab, var(--color-azul) 5%, transparent);
+  }
+  .boton-anadir[aria-pressed='true'] {
+    background: var(--color-naranja);
+    color: var(--color-azul-hondo);
+    --tw-ring-color: var(--color-naranja);
+  }
+  .boton-anadir[aria-pressed='true'] .icono-mas {
+    display: none;
+  }
+  .boton-anadir[aria-pressed='true'] .icono-listo {
+    display: grid;
+  }
+  #bandeja.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  import { whatsapp } from '../config';
+
+  const elegidos = new Map<string, string>();
+
+  const bandeja = document.getElementById('bandeja')!;
+  const cuenta = document.getElementById('bandeja-cuenta')!;
+  const lista = document.getElementById('bandeja-lista')!;
+  const enviar = document.getElementById('bandeja-enviar') as HTMLAnchorElement;
+  const vaciar = document.getElementById('bandeja-vaciar')!;
+
+  function redactar(): string {
+    const titulos = [...elegidos.values()];
+    if (titulos.length === 1) {
+      return `Hola Palsabi 👋 Me interesa «${titulos[0]}». ¿Me cuentan precio y si lo tienen?`;
+    }
+    const enumerados = titulos.map((t) => `• ${t}`).join('\n');
+    return `Hola Palsabi 👋 Me interesan estos libros:\n${enumerados}\n\n¿Me cuentan precios y disponibilidad?`;
+  }
+
+  function refrescar() {
+    const n = elegidos.size;
+    bandeja.classList.toggle('visible', n > 0);
+    cuenta.textContent = n === 1 ? '1 libro' : `${n} libros`;
+    lista.textContent = [...elegidos.values()].join(' · ');
+    enviar.href = n > 0 ? whatsapp(redactar()) : '#';
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-anadir]').forEach((boton) => {
+    boton.addEventListener('click', () => {
+      const id = boton.dataset.anadir!;
+      const titulo = boton.dataset.titulo!;
+      const etiqueta = boton.querySelector('.etiqueta-anadir')!;
+
+      if (elegidos.has(id)) {
+        elegidos.delete(id);
+        boton.setAttribute('aria-pressed', 'false');
+        etiqueta.textContent = 'Añadir a mi pedido';
+      } else {
+        elegidos.set(id, titulo);
+        boton.setAttribute('aria-pressed', 'true');
+        etiqueta.textContent = 'En tu pedido';
+
+        // Elegir un libro suelta su tinta en la cuenca, justo donde está la mano.
+        const caja = boton.getBoundingClientRect();
+        const articulo = boton.closest<HTMLElement>('[data-tinta-libro]');
+        document.dispatchEvent(
+          new CustomEvent('palsabi:gota', {
+            detail: {
+              tinta: articulo?.dataset.tintaLibro ?? 'naranja',
+              x: (caja.left + caja.width / 2) / window.innerWidth,
+              y: 1 - (caja.top + caja.height / 2) / window.innerHeight,
+            },
+          }),
+        );
+      }
+      refrescar();
+    });
+  });
+
+  vaciar.addEventListener('click', () => {
+    elegidos.clear();
+    document.querySelectorAll<HTMLButtonElement>('[data-anadir]').forEach((b) => {
+      b.setAttribute('aria-pressed', 'false');
+      b.querySelector('.etiqueta-anadir')!.textContent = 'Añadir a mi pedido';
+    });
+    refrescar();
+  });
+
+  refrescar();
+</script>

@@ -1,0 +1,81 @@
+---
+import { WHATSAPP_LEGIBLE } from '../config';
+
+/**
+ * Los tres pasos, dibujados como lo que son en este mundo: una gota que cae,
+ * se abre y termina asentada. El orden importa, así que la secuencia se ve.
+ */
+const pasos = [
+  {
+    titulo: 'Escribes',
+    rotulo: 'Tú',
+    texto:
+      'Nos cuentas para quién es o qué andas buscando. Con un renglón basta: «algo para mi mamá», «una Biblia de estudio», «un regalo de bautizo».',
+  },
+  {
+    titulo: 'Te respondemos',
+    rotulo: 'Nosotros',
+    texto:
+      'Contesta una persona que conoce los libros. Te decimos qué tenemos, cuánto cuesta y, si hay algo que te sirve más, también te lo decimos.',
+  },
+  {
+    titulo: 'Lo recibes',
+    rotulo: 'Los dos',
+    texto:
+      'Acordamos por el mismo chat cómo te llega: coordinamos la entrega o lo recoges el domingo en el stand.',
+  },
+];
+---
+
+<section
+  id="pedir"
+  class="relative py-20 sm:py-28"
+  data-tinta="naranja"
+  data-gota-x="0.72"
+  data-gota-y="0.48"
+  data-gota-fuerza="0.9"
+>
+  <!-- Panel contenido, no una tapa a sangre: una banda de borde a borde sella
+       la cuenca y deja la sección sin agua ni fibra. El papel flota; no cubre. -->
+  <div class="px-5 sm:px-8">
+    <div class="margen-quieto hoja mx-auto max-w-[1240px] px-7 py-14 sm:px-12 sm:py-16">
+      <div class="max-w-[42rem]">
+        <h2 class="text-titulo font-700 text-azul">Aquí no hay carrito</h2>
+        <p class="mt-5 font-texto text-guia leading-relaxed text-azul/75">
+          Se pide hablando, al {WHATSAPP_LEGIBLE}. Preferimos que preguntes antes de comprar: un
+          libro bien escogido vale más que uno vendido rápido.
+        </p>
+      </div>
+
+      <ol class="mt-16 grid gap-x-10 gap-y-12 md:grid-cols-3">
+        {
+          pasos.map((paso, i) => (
+            <li class="relative flex flex-col gap-4">
+              {/* La gota en tres momentos: cae, se abre, se asienta. */}
+              <svg
+                class="h-11 w-11 text-naranja"
+                viewBox="0 0 44 44"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                aria-hidden="true"
+              >
+                <circle cx="22" cy="22" r="5.5" fill="currentColor" stroke="none" opacity={i === 0 ? '1' : '0.9'} />
+                {i > 0 && <circle cx="22" cy="22" r="11.5" opacity="0.65" />}
+                {i > 1 && <circle cx="22" cy="22" r="17.5" opacity="0.4" />}
+              </svg>
+
+              <h3 class="font-display text-rubro font-600 tracking-[-0.02em] text-azul">
+                {paso.titulo}
+              </h3>
+              <p class="rotulo -mt-1 text-azul-suave">{paso.rotulo}</p>
+              <p class="max-w-[38ch] font-texto text-cuerpo leading-relaxed text-azul/75">
+                {paso.texto}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,85 @@
+---
+/**
+ * La cuenca: una sola superficie continua detrás de toda la página.
+ * El scroll no cambia de fondo, suelta tinta nueva — la cuenca recuerda
+ * por dónde pasó cada color, así que la página se va saturando conforme bajas.
+ */
+---
+
+<div class="fixed inset-0 -z-10 bg-agua" aria-hidden="true">
+  <canvas id="cuenca" class="h-full w-full block"></canvas>
+  <div class="respaldo absolute inset-0"></div>
+  <!-- El papel. La tinta del suminagashi se levanta sobre una hoja de washi,
+       y esa fibra es parte del material: sin ella la cuenca es una pantalla. -->
+  <div class="washi absolute inset-0"></div>
+</div>
+
+<style>
+  /* Respaldo para equipos sin WebGL2. No es un degradado que finge tinta:
+     es una cuenca de verdad, horneada del mismo solucionador y guardada como
+     imagen. Se oculta en cuanto la cuenca viva arranca. */
+  .respaldo {
+    background: url('/cuenca-respaldo.jpg') center / cover no-repeat var(--color-agua);
+  }
+
+  canvas[data-estado='viva'] + .respaldo {
+    display: none;
+  }
+
+  .washi {
+    background: url('/washi.png') repeat;
+    background-size: 340px 340px;
+    mix-blend-mode: multiply;
+    opacity: 0.55;
+  }
+</style>
+
+<script>
+  import { montarCuenca } from '../scripts/basin';
+
+  const canvas = document.getElementById('cuenca') as HTMLCanvasElement | null;
+  if (canvas) {
+    const cuenca = montarCuenca(canvas);
+    (window as unknown as { __cuenca?: unknown }).__cuenca = cuenca;
+
+    if (cuenca) {
+      // Cada sección suelta su tinta al entrar. La coordenada viene del propio
+      // elemento, así la gota cae donde el ojo ya está mirando.
+      const secciones = document.querySelectorAll<HTMLElement>('[data-tinta]');
+      const vistas = new WeakSet<HTMLElement>();
+
+      const observador = new IntersectionObserver(
+        (entradas) => {
+          for (const entrada of entradas) {
+            const el = entrada.target as HTMLElement;
+            if (!entrada.isIntersecting || vistas.has(el)) continue;
+            vistas.add(el);
+
+            const tinta = (el.dataset.tinta ?? 'naranja') as
+              | 'naranja'
+              | 'azul'
+              | 'amarillo'
+              | 'agua';
+            const x = Number(el.dataset.gotaX ?? 0.5);
+            const y = Number(el.dataset.gotaY ?? 0.5);
+            const fuerza = Number(el.dataset.gotaFuerza ?? 1);
+            cuenca.drop(x, y, tinta, fuerza);
+          }
+        },
+        { threshold: 0.35 },
+      );
+
+      secciones.forEach((s) => observador.observe(s));
+
+      // Los libros sueltan su propia tinta al elegirlos.
+      document.addEventListener('palsabi:gota', (e) => {
+        const detalle = (e as CustomEvent).detail as {
+          tinta: 'naranja' | 'azul' | 'amarillo';
+          x: number;
+          y: number;
+        };
+        cuenca.drop(detalle.x, detalle.y, detalle.tinta, 1.25);
+      });
+    }
+  }
+</script>

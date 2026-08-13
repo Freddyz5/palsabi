@@ -1,0 +1,101 @@
+---
+import Boton from './Boton.astro';
+import { whatsapp, SITIO } from '../config';
+---
+
+<section
+  id="contenido"
+  class="relative flex min-h-[calc(100svh-88px)] items-center px-5 pt-6 pb-16 sm:px-8"
+  data-tinta="naranja"
+  data-gota-x="0.62"
+  data-gota-y="0.56"
+  data-gota-fuerza="1.1"
+>
+  <div class="mx-auto w-full max-w-[1240px]">
+    <!-- El margen quieto: papel opaco sobre el agua. El texto nunca nada
+         sobre la corriente. -->
+    <div
+      class="margen-quieto hoja relative max-w-[34rem] px-7 py-8 sm:px-10 sm:py-11"
+    >
+      <h1 class="text-monumental font-700 text-azul">
+        Libros con<br /><span class="text-naranja-titular">propósito</span>.
+      </h1>
+
+      <p class="text-entrada mt-5 max-w-[38ch] text-azul/80">
+        Librería cristiana en Ecuador. Escogemos uno por uno los libros y las Biblias que vale la
+        pena tener en casa, y te acompañamos a elegir el tuyo.
+      </p>
+
+      <div class="mt-8 flex flex-wrap items-center gap-3.5">
+        <Boton
+          href={whatsapp('Hola Palsabi 👋 Quisiera que me ayuden a escoger un libro.')}
+          tamano="grande"
+        >
+          Escríbenos por WhatsApp
+        </Boton>
+        <Boton href="#seleccion" variante="contorno" icono="ninguno" tamano="grande">
+          Ver la selección
+        </Boton>
+      </div>
+
+      <p class="mt-7 flex items-center gap-2.5 font-texto text-menudo text-azul-suave">
+        <svg
+          class="h-4 w-4 shrink-0 text-naranja"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M8 2.5v11M2.5 8h11" />
+        </svg>
+        Somos los mismos de siempre: antes {SITIO.nombreAnterior}.
+      </p>
+    </div>
+
+    <!-- La instrucción de la cuenca: el agua responde al dedo. Se dice una
+         sola vez, en voz baja, y desaparece en cuanto tocas. -->
+    <p
+      id="pista-cuenca"
+      class="margen-quieto etiqueta mt-7 ml-1 inline-flex items-center gap-2.5 rounded-full py-2 pl-2 pr-4 font-texto text-menudo text-azul/80 transition-opacity duration-700 md:ml-2"
+    >
+      <span
+        class="grid h-6 w-6 place-items-center rounded-full bg-azul/8"
+        aria-hidden="true"
+      >
+        <svg class="h-3.5 w-3.5 text-azul-suave" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 2c0 3-3 4.2-3 7a3 3 0 0 0 6 0c0-2.8-3-4-3-7Z" />
+        </svg>
+      </span>
+      Pasa el dedo por el agua.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Cuando la cuenca no responde —sin WebGL2, o con movimiento reducido— la
+     pista sobra: invitaría a tocar un agua que está quieta. */
+  :global(html.cuenca-inerte) #pista-cuenca {
+    display: none;
+  }
+</style>
+
+<script>
+  // La pista se retira sola en cuanto el visitante ya tocó el agua.
+  const pista = document.getElementById('pista-cuenca');
+  if (pista) {
+    const esconder = () => {
+      pista.style.opacity = '0';
+      window.removeEventListener('pointermove', esconder);
+      window.removeEventListener('touchstart', esconder);
+    };
+    let movimientos = 0;
+    const contar = () => {
+      if (++movimientos > 12) esconder();
+    };
+    window.addEventListener('pointermove', contar, { passive: true });
+    window.addEventListener('touchstart', esconder, { passive: true });
+    setTimeout(esconder, 14000);
+  }
+</script>

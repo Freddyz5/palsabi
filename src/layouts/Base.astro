@@ -1,0 +1,58 @@
+---
+import '../styles/global.css';
+import { SITIO } from '../config';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+}
+
+const { titulo = SITIO.titulo, descripcion = SITIO.descripcion } = Astro.props;
+const canonica = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="es-EC">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonica} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#F4F2EE" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:locale" content="es_EC" />
+    <meta property="og:site_name" content={SITIO.nombre} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <!--
+      THESIS: Una gota de tinta abriéndose en agua es la Palabra entrando en una
+      vida. La página es una cuenca de suminagashi; rechaza la vitrina de
+      librería en crema con serif y la parrilla de portadas tipo streaming.
+      OWN-WORLD: Agua #F4F2EE; tintas de marca — naranja #F8831D (la gota nueva,
+      siempre la más saturada), azul #213D53 (corriente honda), amarillo #FADA57
+      donde el tinte se adelgaza. Gabarito display, Asap texto, rótulos en
+      versalitas espaciadas. El texto vive siempre en margen quieto de papel
+      opaco, nunca flotando sobre la corriente.
+      STORY: El visitante entiende que Palsabi elige libros con propósito, ve
+      tres títulos reales y escribe por WhatsApp con el libro ya nombrado.
+      FIRST VIEWPORT: Cuenca a sangre; una gota naranja cae y florece en anillos;
+      sobre ella, a la izquierda, margen quieto con el ex libris Palsabi, "Libros
+      con propósito" y el botón de WhatsApp.
+      FORM: Cuenca de tinta suminagashi — retador elegido por el usuario por
+      encima de la tirada; seed 2097a5e2.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+    -->
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-azul focus:px-4 focus:py-3 focus:text-agua"
+      >Saltar al contenido</a
+    >
+    <slot />
+  </body>
+</html>

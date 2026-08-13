@@ -1,0 +1,93 @@
+---
+interface Props {
+  href: string;
+  variante?: 'tinta' | 'contorno' | 'quieto';
+  tamano?: 'normal' | 'grande';
+  icono?: 'whatsapp' | 'instagram' | 'ninguno';
+  class?: string;
+}
+
+const {
+  href,
+  variante = 'tinta',
+  tamano = 'normal',
+  icono = 'whatsapp',
+  class: clase = '',
+} = Astro.props;
+
+const externo = href.startsWith('http');
+
+const base =
+  'group relative inline-flex items-center justify-center gap-2.5 overflow-hidden whitespace-nowrap rounded-full font-display font-600 transition-[transform,box-shadow,background-color,color] duration-300 ease-gota active:translate-y-px';
+
+const tamanos = {
+  normal: 'px-6 py-3.5 text-cuerpo',
+  grande: 'px-6 py-4 text-cuerpo sm:px-8 sm:py-4.5 sm:text-guia',
+};
+
+// Tinta oscura sobre el naranja de marca. Blanco sobre #F8831D mide 2,56:1 y
+// no pasa AA en ningún tamaño; el azul profundo da 5,8:1 y además es lo que
+// hace el mundo — tinta encima de un fondo saturado, no al revés.
+const variantes = {
+  tinta:
+    'bg-naranja text-azul-hondo shadow-[0_2px_4px_rgba(89,42,4,0.18),0_14px_30px_-14px_rgba(194,94,10,0.75)] hover:bg-[#ff9836] hover:shadow-[0_3px_6px_rgba(89,42,4,0.2),0_20px_40px_-16px_rgba(194,94,10,0.85)] hover:-translate-y-0.5',
+  contorno:
+    'bg-transparent text-azul ring-[1.5px] ring-inset ring-azul/35 hover:ring-azul/70 hover:bg-azul/6',
+  quieto:
+    'bg-azul text-agua shadow-[0_2px_4px_rgba(9,20,29,0.2),0_14px_30px_-14px_rgba(22,41,58,0.7)] hover:bg-azul-hondo hover:-translate-y-0.5',
+};
+---
+
+<a
+  href={href}
+  class:list={[base, tamanos[tamano], variantes[variante], clase]}
+  {...externo ? { target: '_blank', rel: 'noopener noreferrer' } : {}}
+>
+  {
+    icono === 'whatsapp' && (
+      <svg
+        class="relative h-[1.15em] w-[1.15em] shrink-0"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.24 8.24 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24Zm-2.6 4.02c-.14 0-.36.05-.55.26-.19.2-.72.7-.72 1.72 0 1.01.74 1.99.84 2.12.1.14 1.43 2.18 3.46 3.06.48.21.86.33 1.16.43.49.15.93.13 1.28.08.39-.06 1.2-.49 1.37-.97.17-.47.17-.88.12-.96-.05-.09-.19-.14-.39-.24-.2-.1-1.2-.59-1.38-.66-.19-.07-.32-.1-.46.1-.14.2-.53.66-.65.8-.12.14-.24.15-.44.05-.2-.1-.86-.32-1.63-1.01a6.1 6.1 0 0 1-1.13-1.4c-.12-.2-.01-.31.09-.41.09-.09.2-.24.3-.36.1-.12.13-.2.2-.34.07-.14.03-.26-.02-.36-.05-.1-.44-1.11-.62-1.52-.16-.39-.33-.34-.45-.35h-.38Z" />
+      </svg>
+    )
+  }
+
+  {
+    icono === 'instagram' && (
+      <svg
+        class="relative h-[1.15em] w-[1.15em] shrink-0"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" />
+      </svg>
+    )
+  }
+
+  <span class="relative"><slot /></span>
+
+  <svg
+    class="relative h-[0.95em] w-[0.95em] shrink-0 transition-transform duration-300 ease-gota group-hover:translate-x-1"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.9"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M3 8h10M9 4l4 4-4 4" />
+  </svg>
+</a>

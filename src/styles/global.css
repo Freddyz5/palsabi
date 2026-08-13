@@ -1,0 +1,226 @@
+@import 'tailwindcss';
+
+@import '@fontsource/gabarito/latin-500.css';
+@import '@fontsource/gabarito/latin-600.css';
+@import '@fontsource/gabarito/latin-700.css';
+@import '@fontsource-variable/asap/wght.css';
+
+@theme {
+  /* --- El agua ---------------------------------------------------------- */
+  /* La cuenca: papel mojado, apenas cálido. Nunca crema. */
+  --color-agua: #f4f2ee;
+  --color-agua-honda: #e7e3dc;
+
+  /* --- Las tintas ------------------------------------------------------- */
+  /* Muestreadas de brand/ref-3.png y ref-2.png. No se retocan. */
+  --color-naranja: #f8831d;
+  --color-naranja-hondo: #c25e0a;
+  --color-amarillo: #fada57;
+  --color-azul: #213d53;
+  --color-azul-hondo: #16293a;
+  --color-grafito: #4f4f4f;
+
+  /* La tinta al adelgazarse: lo que queda cuando la gota ya se extendió. */
+  --color-naranja-lavado: #fbd9b6;
+  --color-azul-lavado: #b9c6d0;
+  --color-amarillo-lavado: #fdf0c4;
+
+  /* --- Tintas para texto ------------------------------------------------
+     El naranja de marca es color de superficie, no de letra: #F8831D sobre
+     el agua da 2,3:1 y no pasa AA ni en titular. PRODUCT.md ya lo dejaba
+     dicho. Estas son las versiones que sí se leen, medidas contra #F4F2EE.  */
+  --color-naranja-texto: #a34e06; /* 5,2:1 — sirve para texto corrido */
+  --color-naranja-titular: #c25e0a; /* 4,0:1 — solo en titular grande */
+  --color-azul-suave: #4f6172; /* 5,0:1 sobre el papel ya con fibra */
+
+  /* --- Tipografía ------------------------------------------------------- */
+  /* Gabarito: geométrica redondeada, de la familia del logotipo Palsabi.
+     Asap: humanista, tranquila, buena con tildes y eñes en texto corrido. */
+  --font-display: 'Gabarito', ui-sans-serif, system-ui, sans-serif;
+  --font-texto: 'Asap Variable', 'Asap', ui-sans-serif, system-ui, sans-serif;
+
+  --text-monumental: clamp(2.5rem, 5.6vw, 4.4rem);
+  --text-monumental--line-height: 0.98;
+  --text-monumental--letter-spacing: -0.035em;
+
+  --text-titulo: clamp(1.85rem, 3.6vw, 2.9rem);
+  --text-titulo--line-height: 1.04;
+  --text-titulo--letter-spacing: -0.025em;
+
+  --text-entrada: clamp(1.125rem, 2.1vw, 1.4rem);
+  --text-entrada--line-height: 1.55;
+
+  /* La escala real. Antes había trece tamaños literales, nueve de ellos entre
+     0,9 y 1,1rem: eso no es una escala, es ruido acumulado. Cuatro pasos con
+     un trabajo cada uno. */
+  --text-rubro: 1.4rem;
+  --text-rubro--line-height: 1.15;
+  --text-rubro--letter-spacing: -0.02em;
+
+  --text-guia: 1.1rem;
+  --text-guia--line-height: 1.65;
+
+  --text-cuerpo: 1rem;
+  --text-cuerpo--line-height: 1.6;
+
+  --text-menudo: 0.9rem;
+  --text-menudo--line-height: 1.5;
+
+  --ease-gota: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background: var(--color-agua);
+    color: var(--color-azul);
+    font-family: var(--font-texto);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* El foco es una gota de tinta, no un anillo del navegador. */
+  :focus-visible {
+    outline: 3px solid var(--color-naranja);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--color-naranja);
+    color: var(--color-agua);
+  }
+}
+
+@layer components {
+  /* El margen quieto: papel opaco sobre el agua, donde el texto siempre se lee.
+     La regla del mundo — la tipografía nunca nada sobre la corriente.
+     Lleva la misma fibra de washi que la cuenca: el papel de la página tiene
+     que ser el mismo papel, no una superficie lisa encima del que sí lo es. */
+  .margen-quieto {
+    background:
+      url('/washi.png') repeat,
+      color-mix(in oklab, var(--color-agua) 92%, white);
+    background-size:
+      340px 340px,
+      auto;
+    background-blend-mode: multiply, normal;
+  }
+
+  /* Tres registros de papel, no uno repetido cinco veces. Si toda superficie
+     es el mismo panel, el margen quieto deja de señalar nada. */
+
+  /* La hoja: el papel principal, el que sostiene el argumento. */
+  .hoja {
+    border-radius: 20px;
+    box-shadow:
+      0 1px 2px oklch(0.35 0.05 250 / 0.06),
+      0 18px 44px -20px oklch(0.35 0.05 250 / 0.34);
+  }
+
+  /* La tira: una hoja suelta apoyada en el agua. Esquinas rectas y un filo de
+     un pelo, sin sombra: se sostiene por el canto, no por elevarse. */
+  .tira {
+    border-radius: 2px;
+    box-shadow:
+      0 0 0 1px oklch(0.35 0.05 250 / 0.09),
+      0 2px 0 oklch(0.35 0.05 250 / 0.04);
+  }
+
+  /* La etiqueta: pie de una portada, no un contenedor. Casi no pesa. */
+  .etiqueta {
+    border-radius: 10px;
+    box-shadow: 0 6px 18px -12px oklch(0.35 0.05 250 / 0.4);
+  }
+
+  /* La hoja entintada: una lámina que ya levantó la tinta de la cuenca.
+     Sustituye a las franjas de color a sangre. Aquellas eran un invento mío,
+     no del suminagashi, y por eso cada intento producía una costura: un campo
+     de color pegado sobre agua siempre tiene bordes. Una hoja no: se apoya,
+     se le ve el canto y el agua sigue corriendo alrededor. Además devuelve el
+     texto al papel, que es la regla que la página no puede romper. */
+  .hoja-tinta {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow:
+      0 2px 4px oklch(0.25 0.04 250 / 0.14),
+      0 30px 64px -28px oklch(0.25 0.04 250 / 0.55);
+  }
+
+  /* La fibra de la hoja entintada usa su propia textura, centrada en gris
+     medio y aplicada con `overlay`. La del papel va multiplicada, y multiplicar
+     una trama clara sobre azul profundo no mueve el color: quedaba declarada y
+     no se veía, que es peor que no ponerla. */
+  .hoja-tinta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('/washi-tinta.webp') repeat;
+    background-size: 300px 300px;
+    mix-blend-mode: overlay;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* `overlay` pega más fuerte en tonos medios que en oscuros: el mismo 0,5 que
+     queda bien sobre el azul deja el naranja moteado, a 1,6x la fibra del
+     papel. Cada tinta lleva su propia dosis para que las tres superficies
+     parezcan el mismo material. */
+  .hoja-tinta-clara::before {
+    opacity: 0.3;
+  }
+
+  /* La escala del logotipo. Es medida de componente, no un paso de la escala
+     tipográfica: el resto del sello se dimensiona en `em` a partir de aquí. */
+  .marca-fila {
+    font-size: 1.05rem;
+  }
+
+  .marca-sello {
+    font-size: 1.3rem;
+  }
+
+  /* Etiqueta en versalitas espaciadas, como las del tablero del mundo. */
+  .rotulo {
+    font-family: var(--font-texto);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+}
