@@ -1,6 +1,6 @@
 ---
 import { LIBROS } from '../data/libros';
-import { whatsapp } from '../config';
+import { whatsapp } from '../constants/config';
 import Boton from './Boton.astro';
 ---
 
@@ -187,7 +187,7 @@ import Boton from './Boton.astro';
 </style>
 
 <script>
-  import { whatsapp } from '../config';
+  import { whatsapp } from '../constants/config';
 
   const elegidos = new Map<string, string>();
 
