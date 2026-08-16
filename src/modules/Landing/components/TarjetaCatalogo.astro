@@ -1,0 +1,155 @@
+---
+/**
+ * Una tarjeta del catálogo público. Vive en su propio archivo porque se usa
+ * dos veces: en la rejilla que se ve, y dentro de un `<template>` que el panel
+ * del dueño clona cuando añade un libro. Un solo sitio donde está escrita la
+ * tarjeta, y no dos que se desincronizan al primer retoque.
+ *
+ * Todo lo que el panel puede cambiar en vivo lleva `data-campo`. El script no
+ * sabe de clases ni de estructura: busca el campo y le cambia el contenido.
+ */
+import { estadoDe, ESTADO_LABEL, ESTADO_CLASE, type ProductoDemo } from '../data/catalogo-demo';
+
+interface Props {
+  producto: ProductoDemo;
+  /** La copia que vive dentro del `<template>`, sin datos que enseñar. */
+  plantilla?: boolean;
+}
+
+const { producto, plantilla = false } = Astro.props;
+const estado = estadoDe(producto.stock);
+const agotado = producto.stock <= 0;
+---
+
+<li data-producto={plantilla ? undefined : producto.id} class="transition-opacity duration-200">
+  <article class="margen-quieto etiqueta flex h-full flex-col overflow-hidden">
+    <button
+      type="button"
+      data-ficha={plantilla ? undefined : producto.id}
+      class="boton-ficha group/cubierta relative block w-full text-left"
+      aria-label={`Ver detalle de ${producto.titulo}`}
+    >
+      <div data-campo="portada">
+        {producto.portada ? (
+          <img
+            src={producto.portada}
+            alt={`Portada de ${producto.titulo}`}
+            width="290"
+            height="352"
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+            class="h-44 w-full object-cover transition-transform duration-500 ease-gota group-hover/cubierta:scale-[1.03]"
+          />
+        ) : (
+          <div
+            class="flex h-44 w-full items-center justify-center"
+            style={`background: color-mix(in oklab, var(--color-${producto.tinta}) 22%, var(--color-agua));`}
+          >
+            <svg class="h-9 w-9 text-azul/35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15.5H6.5A2.5 2.5 0 0 0 4 21V5.5Z" />
+              <path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20" />
+            </svg>
+          </div>
+        )}
+      </div>
+
+      <span
+        data-campo="etiqueta"
+        hidden={!producto.etiqueta}
+        class="etiqueta-flotante rotulo absolute top-2.5 left-2.5 rounded-full bg-naranja px-2.5 py-1 text-azul-hondo"
+      >
+        {producto.etiqueta === 'nuevo' ? 'Nuevo' : 'Recomendado'}
+      </span>
+    </button>
+
+    <div class="flex flex-1 flex-col px-5 pt-4 pb-5">
+      <h3 class="font-display text-cuerpo font-600 leading-snug text-azul">
+        <span data-campo="titulo">{producto.titulo}</span>
+        <span
+          data-campo="ejemplo"
+          hidden={!producto.ejemplo}
+          class="rotulo ml-1.5 align-middle text-azul-suave/70"
+        >
+          (ejemplo)
+        </span>
+      </h3>
+      <p data-campo="autor" class="mt-1 font-texto text-menudo text-azul-suave">{producto.autor}</p>
+
+      <div class="mt-3 flex items-center justify-between">
+        <span data-campo="precio" class="font-display text-cuerpo font-600 text-azul">
+          ${producto.precio.toFixed(2)}
+        </span>
+        <span
+          data-campo="estado"
+          class:list={['flex items-center gap-1.5 font-texto text-menudo', ESTADO_CLASE[estado]]}
+        >
+          <svg class="h-2 w-2 shrink-0" viewBox="0 0 8 8" fill="currentColor" aria-hidden="true">
+            <circle cx="4" cy="4" r="4" />
+          </svg>
+          <span data-campo="estado-texto">{ESTADO_LABEL[estado]}</span>
+        </span>
+      </div>
+
+      {/* Un solo botón con dos caras: agotado lo deshabilita y le cambia el
+          rótulo. Dos botones alternándose obligaban a rehacer el nodo entero
+          cada vez que el dueño mueve el stock. */}
+      <button
+        type="button"
+        class="boton-anadir mt-4 flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 font-display text-cuerpo font-600 ring-[1.5px] ring-inset transition-all duration-300 ease-gota"
+        data-anadir={plantilla ? undefined : producto.id}
+        data-titulo={producto.titulo}
+        aria-pressed="false"
+        disabled={agotado}
+      >
+        <span class="icono-mas grid h-[1.15em] w-[1.15em] place-items-center">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+            <path d="M8 3v10M3 8h10" />
+          </svg>
+        </span>
+        <span class="icono-listo hidden h-[1.15em] w-[1.15em] place-items-center">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3.5 8.5l3 3 6-7" />
+          </svg>
+        </span>
+        <span class="etiqueta-anadir">{agotado ? 'Agotado por ahora' : 'Añadir a mi pedido'}</span>
+      </button>
+    </div>
+  </article>
+</li>
+
+<style>
+  /* Estos estilos viven aquí y no en `Catalogo.astro` porque Astro aísla el CSS
+     por componente: una regla escrita allí no alcanzaría a este markup. */
+  .boton-anadir {
+    color: var(--color-azul);
+    --tw-ring-color: color-mix(in oklab, var(--color-azul) 28%, transparent);
+  }
+  .boton-anadir:hover:not(:disabled) {
+    --tw-ring-color: color-mix(in oklab, var(--color-azul) 62%, transparent);
+    background: color-mix(in oklab, var(--color-azul) 5%, transparent);
+  }
+  .boton-anadir[aria-pressed='true'] {
+    background: var(--color-naranja);
+    color: var(--color-azul-hondo);
+    --tw-ring-color: var(--color-naranja);
+  }
+  .boton-anadir[aria-pressed='true'] .icono-mas {
+    display: none;
+  }
+  .boton-anadir[aria-pressed='true'] .icono-listo {
+    display: grid;
+  }
+
+  /* Agotado: el mismo botón, apagado. No desaparece —el libro sigue estando— y
+     el signo de más sobra cuando no hay nada que añadir. */
+  .boton-anadir:disabled {
+    cursor: not-allowed;
+    color: color-mix(in oklab, var(--color-azul-suave) 60%, transparent);
+    --tw-ring-color: color-mix(in oklab, var(--color-azul) 12%, transparent);
+  }
+  .boton-anadir:disabled .icono-mas,
+  .boton-anadir:disabled .icono-listo {
+    display: none;
+  }
+</style>
