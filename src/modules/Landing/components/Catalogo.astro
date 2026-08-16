@@ -263,19 +263,6 @@ const MOLDE: ProductoDemo = {
         </div>
       </div>
     </div>
-
-    <!-- ============ Ideas en el radar ============ -->
-    <div class="margen-quieto tira mt-6 px-7 py-8 sm:px-10">
-      <p class="rotulo text-azul-suave">Ideas en el radar — aún sin decidir</p>
-      <ul class="mt-4 space-y-2.5 font-texto text-cuerpo leading-relaxed text-azul/75">
-        <li>Contador de cuántas veces se pidió cada libro por WhatsApp.</li>
-        <li>
-          Las etiquetas <span class="font-600 text-azul">Nuevo</span> y{' '}
-          <span class="font-600 text-azul">Recomendado</span> que viste arriba en un par de libros
-          — esa es una de estas ideas, ya aplicada.
-        </li>
-      </ul>
-    </div>
   </div>
 </section>
 
@@ -310,7 +297,7 @@ const MOLDE: ProductoDemo = {
         href="#"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 rounded-full bg-naranja px-5 py-3 font-display text-cuerpo font-600 text-azul-hondo transition-[background-color,transform] duration-300 ease-gota hover:bg-[#ff9836] hover:-translate-y-0.5"
+        class="inline-flex items-center gap-2 rounded-full bg-naranja px-5 py-3 font-display text-cuerpo font-600 text-azul-hondo transition-[background-color,transform] duration-300 ease-gota hover:bg-naranja-vivo hover:-translate-y-0.5"
       >
         Preguntar por este
       </a>
@@ -346,7 +333,7 @@ const MOLDE: ProductoDemo = {
     box-shadow: none;
   }
   .boton-panel-lleno:hover {
-    background: #ff9836;
+    background: var(--color-naranja-vivo);
     color: var(--color-azul-hondo);
   }
 
@@ -463,7 +450,6 @@ const MOLDE: ProductoDemo = {
     campo(tarjeta, 'titulo')!.textContent = fila.titulo;
     campo(tarjeta, 'autor')!.textContent = fila.autor;
     campo(tarjeta, 'precio')!.textContent = `$${fila.precio.toFixed(2)}`;
-    campo(tarjeta, 'ejemplo')!.hidden = !fila.ejemplo;
 
     const elEstado = campo(tarjeta, 'estado')!;
     elEstado.classList.remove(...Object.values(ESTADO_CLASE));

@@ -29,6 +29,10 @@ const agotado = producto.stock <= 0;
       class="boton-ficha group/cubierta relative block w-full text-left"
       aria-label={`Ver detalle de ${producto.titulo}`}
     >
+      {/* Recorte a una banda igual para todas —eso distingue al catálogo de la
+          Selección, que enseña la portada entera— pero anclado arriba: el
+          título de un libro vive en la mitad superior de su portada, y
+          centrando el recorte se lo comía. */}
       <div data-campo="portada">
         {producto.portada ? (
           <img
@@ -39,7 +43,7 @@ const agotado = producto.stock <= 0;
             loading="lazy"
             decoding="async"
             referrerpolicy="no-referrer"
-            class="h-44 w-full object-cover transition-transform duration-500 ease-gota group-hover/cubierta:scale-[1.03]"
+            class="h-44 w-full object-cover object-top transition-transform duration-500 ease-gota group-hover/cubierta:scale-[1.03]"
           />
         ) : (
           <div
@@ -66,13 +70,6 @@ const agotado = producto.stock <= 0;
     <div class="flex flex-1 flex-col px-5 pt-4 pb-5">
       <h3 class="font-display text-cuerpo font-600 leading-snug text-azul">
         <span data-campo="titulo">{producto.titulo}</span>
-        <span
-          data-campo="ejemplo"
-          hidden={!producto.ejemplo}
-          class="rotulo ml-1.5 align-middle text-azul-suave/70"
-        >
-          (ejemplo)
-        </span>
       </h3>
       <p data-campo="autor" class="mt-1 font-texto text-menudo text-azul-suave">{producto.autor}</p>
 

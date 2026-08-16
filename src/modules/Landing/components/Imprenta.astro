@@ -1,0 +1,159 @@
+---
+/**
+ * La imprenta: una sola superficie continua detrás de toda la página.
+ *
+ * Sustituye a la cuenca de suminagashi. La idea de la tinta se queda —de ahí
+ * sale la marca— pero cambia de oficio: en vez de tinta flotando en agua, tinta
+ * puesta por una prensa. Trama de medio tono, filete de margen y sellos que
+ * florecen donde antes caían las gotas. El fondo se lee como el reverso de una
+ * hoja impresa, no como un cuadro; que es lo que tiene que decir una librería.
+ *
+ * El scroll no cambia de fondo: suelta un sello nuevo. La página se va cargando
+ * de tinta conforme bajas, igual que antes, solo que la tinta impresa no viaja:
+ * se posa donde cae y ahí se queda.
+ *
+ * Contrato con las secciones (el mismo que tenía la cuenca):
+ *   data-tinta        naranja | azul | amarillo | agua
+ *   data-gota-x/y     0–1, origen abajo-izquierda, como en la cuenca
+ *   data-gota-fuerza  tamaño relativo del sello
+ * y el evento `palsabi:gota` para los libros que se eligen a mano.
+ */
+---
+
+<div class="fondo fixed inset-0 -z-10" aria-hidden="true">
+  <div id="sellos" class="absolute inset-0 overflow-hidden"></div>
+  <div class="trama absolute inset-0"></div>
+  <div class="filete absolute inset-0"></div>
+  <!-- El papel. La misma fibra de washi que llevan las hojas de la página: sin
+       ella esto es una pantalla con puntos, no una hoja impresa. -->
+  <div class="washi absolute inset-0"></div>
+</div>
+
+<style>
+  .fondo {
+    background: var(--color-agua);
+  }
+
+  /* La trama de medio tono: el punto de imprenta, del tamaño en que todavía se
+     intuye y no se cuenta. Es el grano del material, no una retícula: si se
+     llega a contar los puntos, está demasiado fuerte. */
+  .trama {
+    background-image: radial-gradient(
+      color-mix(in oklab, var(--color-azul) 30%, transparent) 0.9px,
+      transparent 1px
+    );
+    background-size: 7px 7px;
+    /* La dosis está puesta al filo de lo perceptible a propósito: un punto más
+       y esto deja de ser grano de papel para volverse papel cuadriculado. */
+    opacity: 0.36;
+  }
+
+  /* El filete de margen: la caja de la página. Una línea a cada lado, del grosor
+     de un pelo, como la de un libro bien compuesto. Se alinea con el margen
+     lateral de las secciones —1,25rem en móvil, 2rem desde `sm`— más el aire
+     que necesita un filete para no parecer un borde de la ventana. */
+  .filete {
+    --margen: clamp(1.25rem, 4vw, 4.5rem);
+    border-left: 1px solid color-mix(in oklab, var(--color-azul) 14%, transparent);
+    border-right: 1px solid color-mix(in oklab, var(--color-azul) 14%, transparent);
+    margin-inline: var(--margen);
+  }
+
+  .washi {
+    background: url('/washi.png') repeat;
+    background-size: 340px 340px;
+    mix-blend-mode: multiply;
+    opacity: 0.5;
+  }
+
+  /* El sello: la mancha que deja un tampón cargado. Entra, se asienta y se
+     queda. Multiplicado, porque la tinta impresa oscurece el papel en vez de
+     posarse encima —esa es la diferencia entre imprimir y pintar. */
+  :global(.sello) {
+    position: absolute;
+    width: clamp(18rem, 34vw, 34rem);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--sello-tinta) 30%, transparent) 0 30%,
+      color-mix(in oklab, var(--sello-tinta) 14%, transparent) 54%,
+      transparent 74%
+    );
+    mix-blend-mode: multiply;
+    filter: blur(34px);
+    opacity: 0;
+    animation: posar 1400ms var(--ease-gota) forwards;
+  }
+
+  @keyframes posar {
+    from {
+      opacity: 0;
+      scale: 0.82;
+    }
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.sello) {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  const lienzo = document.getElementById('sellos');
+
+  const tintas: Record<string, string> = {
+    naranja: 'var(--color-naranja)',
+    azul: 'var(--color-azul)',
+    amarillo: 'var(--color-amarillo)',
+    agua: 'var(--color-agua-honda)',
+  };
+
+  function sellar(x: number, y: number, tinta: string, fuerza = 1) {
+    if (!lienzo) return;
+    const sello = document.createElement('div');
+    sello.className = 'sello';
+    sello.style.left = `${x * 100}%`;
+    // La `y` viene con el origen abajo, que es como hablaba la cuenca.
+    sello.style.top = `${(1 - y) * 100}%`;
+    sello.style.setProperty('--sello-tinta', tintas[tinta] ?? tintas.naranja);
+    sello.style.setProperty('--sello-fuerza', String(fuerza));
+    sello.style.width = `calc(clamp(18rem, 34vw, 34rem) * ${fuerza})`;
+    lienzo.appendChild(sello);
+    // Una página no admite sellos infinitos: los más viejos se retiran.
+    while (lienzo.children.length > 7) lienzo.firstElementChild?.remove();
+  }
+
+  // Cada sección sella su tinta al entrar, una sola vez.
+  const vistas = new WeakSet<HTMLElement>();
+  const observador = new IntersectionObserver(
+    (entradas) => {
+      for (const entrada of entradas) {
+        const el = entrada.target as HTMLElement;
+        if (!entrada.isIntersecting || vistas.has(el)) continue;
+        vistas.add(el);
+        sellar(
+          Number(el.dataset.gotaX ?? 0.5),
+          Number(el.dataset.gotaY ?? 0.5),
+          el.dataset.tinta ?? 'naranja',
+          Number(el.dataset.gotaFuerza ?? 1),
+        );
+      }
+    },
+    { threshold: 0.35 },
+  );
+  document.querySelectorAll<HTMLElement>('[data-tinta]').forEach((s) => observador.observe(s));
+
+  // Y los libros siguen sellando al elegirlos, donde está la mano.
+  document.addEventListener('palsabi:gota', (e) => {
+    const d = (e as CustomEvent).detail as { tinta: string; x: number; y: number };
+    sellar(d.x, d.y, d.tinta, 1.15);
+  });
+</script>

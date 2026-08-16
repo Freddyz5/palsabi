@@ -173,7 +173,7 @@ const cuantos = CUANTOS[LIBROS.length] ?? String(LIBROS.length);
         href="#"
         target="_blank"
         rel="noopener noreferrer"
-        class="group inline-flex items-center gap-2.5 rounded-full bg-naranja px-6 py-3 font-display text-cuerpo font-600 text-azul-hondo shadow-[0_2px_4px_rgba(89,42,4,0.25)] transition-[background-color,transform] duration-300 ease-gota hover:bg-[#ff9836] hover:-translate-y-0.5"
+        class="group inline-flex items-center gap-2.5 rounded-full bg-naranja px-6 py-3 font-display text-cuerpo font-600 text-azul-hondo shadow-[0_2px_4px_rgba(89,42,4,0.25)] transition-[background-color,transform] duration-300 ease-gota hover:bg-naranja-vivo hover:-translate-y-0.5"
       >
         <svg class="h-[1.15em] w-[1.15em] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.24 8.24 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24Zm-2.6 4.02c-.14 0-.36.05-.55.26-.19.2-.72.7-.72 1.72 0 1.01.74 1.99.84 2.12.1.14 1.43 2.18 3.46 3.06.48.21.86.33 1.16.43.49.15.93.13 1.28.08.39-.06 1.2-.49 1.37-.97.17-.47.17-.88.12-.96-.05-.09-.19-.14-.39-.24-.2-.1-1.2-.59-1.38-.66-.19-.07-.32-.1-.46.1-.14.2-.53.66-.65.8-.12.14-.24.15-.44.05-.2-.1-.86-.32-1.63-1.01a6.1 6.1 0 0 1-1.13-1.4c-.12-.2-.01-.31.09-.41.09-.09.2-.24.3-.36.1-.12.13-.2.2-.34.07-.14.03-.26-.02-.36-.05-.1-.44-1.11-.62-1.52-.16-.39-.33-.34-.45-.35h-.38Z" />
@@ -312,46 +312,65 @@ const cuantos = CUANTOS[LIBROS.length] ?? String(LIBROS.length);
     enviar.href = n > 0 ? whatsapp(redactar()) : '#';
   }
 
-  document.querySelectorAll<HTMLButtonElement>('[data-anadir]').forEach((boton) => {
-    boton.addEventListener('click', () => {
-      const id = boton.dataset.anadir!;
-      const titulo = boton.dataset.titulo!;
-      const etiqueta = boton.querySelector('.etiqueta-anadir')!;
+  function soltar(boton: HTMLButtonElement) {
+    boton.setAttribute('aria-pressed', 'false');
+    const etiqueta = boton.querySelector('.etiqueta-anadir');
+    if (etiqueta) etiqueta.textContent = boton.disabled ? 'Agotado por ahora' : 'Añadir a mi pedido';
+  }
 
-      if (elegidos.has(id)) {
-        elegidos.delete(id);
-        boton.setAttribute('aria-pressed', 'false');
-        etiqueta.textContent = 'Añadir a mi pedido';
-      } else {
-        elegidos.set(id, titulo);
-        boton.setAttribute('aria-pressed', 'true');
-        etiqueta.textContent = 'En tu pedido';
+  /**
+   * Delegado en `document` y no enganchado botón por botón: el panel del dueño
+   * da de alta libros después de que esto corre, y sus tarjetas tienen que
+   * poder pedirse igual que las que ya estaban.
+   */
+  document.addEventListener('click', (e) => {
+    const boton = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-anadir]');
+    if (!boton || boton.disabled) return;
 
-        // Elegir un libro suelta su tinta en la cuenca, justo donde está la mano.
-        const caja = boton.getBoundingClientRect();
-        const articulo = boton.closest<HTMLElement>('[data-tinta-libro]');
-        document.dispatchEvent(
-          new CustomEvent('palsabi:gota', {
-            detail: {
-              tinta: articulo?.dataset.tintaLibro ?? 'naranja',
-              x: (caja.left + caja.width / 2) / window.innerWidth,
-              y: 1 - (caja.top + caja.height / 2) / window.innerHeight,
-            },
-          }),
-        );
-      }
-      refrescar();
-    });
-  });
+    const id = boton.dataset.anadir!;
+    const titulo = boton.dataset.titulo!;
+    const etiqueta = boton.querySelector('.etiqueta-anadir')!;
 
-  vaciar.addEventListener('click', () => {
-    elegidos.clear();
-    document.querySelectorAll<HTMLButtonElement>('[data-anadir]').forEach((b) => {
-      b.setAttribute('aria-pressed', 'false');
-      b.querySelector('.etiqueta-anadir')!.textContent = 'Añadir a mi pedido';
-    });
+    if (elegidos.has(id)) {
+      elegidos.delete(id);
+      soltar(boton);
+    } else {
+      elegidos.set(id, titulo);
+      boton.setAttribute('aria-pressed', 'true');
+      etiqueta.textContent = 'En tu pedido';
+
+      // Elegir un libro suelta su tinta en la cuenca, justo donde está la mano.
+      const caja = boton.getBoundingClientRect();
+      const articulo = boton.closest<HTMLElement>('[data-tinta-libro]');
+      document.dispatchEvent(
+        new CustomEvent('palsabi:gota', {
+          detail: {
+            tinta: articulo?.dataset.tintaLibro ?? 'naranja',
+            x: (caja.left + caja.width / 2) / window.innerWidth,
+            y: 1 - (caja.top + caja.height / 2) / window.innerHeight,
+          },
+        }),
+      );
+    }
     refrescar();
   });
+
+  function vaciarTodo() {
+    elegidos.clear();
+    document.querySelectorAll<HTMLButtonElement>('[data-anadir]').forEach(soltar);
+    refrescar();
+  }
+
+  vaciar.addEventListener('click', vaciarTodo);
+
+  // El panel del dueño avisa cuando un libro deja de estar disponible o
+  // desaparece del inventario: lo que ya no existe no puede seguir en el pedido.
+  document.addEventListener('palsabi:quitar', (e) => {
+    const id = (e as CustomEvent<{ id: string }>).detail?.id;
+    if (id && elegidos.delete(id)) refrescar();
+  });
+
+  document.addEventListener('palsabi:vaciar-pedido', vaciarTodo);
 
   refrescar();
 </script>

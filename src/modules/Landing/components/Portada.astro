@@ -9,7 +9,7 @@ const [ruge, mundo, parabolas, jesusTeLlama, casoCristo] = LIBROS;
  * El abanico: los libros apoyados en el agua, en arco, con el más alto al
  * centro. Solo tres portadas son reales —son las únicas que tenemos— y a los
  * lados van dos cantos de papel entintado. Un canto no finge ser un libro que
- * no existe: es una hoja de la cuenca con el rótulo de lo que sí hay.
+ * no existe: es una hoja impresa con el rótulo de lo que sí hay.
  *
  * Todas las piezas se apoyan en la misma línea de agua y el arco lo dibuja
  * `alto`, la fracción de la caja del abanico que ocupa cada una. En la mayoría
@@ -98,24 +98,6 @@ const abanico = [
     </div>
   </div>
 
-  <!-- La pista de la cuenca vive fuera de la hoja: habla del agua, no del texto. -->
-  <p
-    id="pista-cuenca"
-    class="margen-quieto etiqueta relative z-20 mx-auto mt-5 flex w-fit items-center gap-2.5 rounded-full py-2 pl-2 pr-4 font-texto text-menudo text-azul/80 transition-opacity duration-700"
-  >
-    <span class="grid h-6 w-6 place-items-center rounded-full bg-azul/8" aria-hidden="true">
-      <svg
-        class="h-3.5 w-3.5 text-azul-suave"
-        viewBox="0 0 16 16"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-      >
-        <path d="M8 2c0 3-3 4.2-3 7a3 3 0 0 0 6 0c0-2.8-3-4-3-7Z" />
-      </svg>
-    </span>
-    Pasa el dedo por el agua.
-  </p>
 </section>
 
 <style>
@@ -142,9 +124,6 @@ const abanico = [
     align-items: flex-end;
     justify-content: center;
     height: clamp(14rem, 30vw, 23rem);
-    /* El canto de la sección corta los libros por abajo: están apoyados en el
-       agua, no posados sobre una repisa. */
-    margin-bottom: 0;
   }
 
   .pieza {
@@ -157,7 +136,7 @@ const abanico = [
   }
 
   /* El solape: cada libro se mete debajo del siguiente. En pantalla chica el
-     abanico se cierra más, porque hay menos agua donde abrirlo. */
+     abanico se cierra más, porque hay menos sitio donde abrirlo. */
   .pieza + .pieza {
     margin-left: clamp(-7rem, -6vw, -2.5rem);
   }
@@ -190,8 +169,8 @@ const abanico = [
     z-index: 4;
   }
 
-  /* El canto: una hoja que ya levantó tinta de la cuenca, con proporción de
-     libro. No lleva portada porque no hay portada que enseñar. */
+  /* El canto: una hoja entintada con proporción de libro. No lleva portada
+     porque no hay portada que enseñar. */
   .canto {
     aspect-ratio: 5 / 7;
     box-shadow: inset 3px 0 0 color-mix(in oklab, var(--color-azul) 18%, transparent);
@@ -209,29 +188,4 @@ const abanico = [
   .canto-amarillo {
     background-color: var(--color-amarillo-lavado);
   }
-
-  /* Cuando la cuenca no responde —sin WebGL2, o con movimiento reducido— la
-     pista sobra: invitaría a tocar un agua que está quieta. */
-  :global(html.cuenca-inerte) #pista-cuenca {
-    display: none;
-  }
 </style>
-
-<script>
-  // La pista se retira sola en cuanto el visitante ya tocó el agua.
-  const pista = document.getElementById('pista-cuenca');
-  if (pista) {
-    const esconder = () => {
-      pista.style.opacity = '0';
-      window.removeEventListener('pointermove', esconder);
-      window.removeEventListener('touchstart', esconder);
-    };
-    let movimientos = 0;
-    const contar = () => {
-      if (++movimientos > 12) esconder();
-    };
-    window.addEventListener('pointermove', contar, { passive: true });
-    window.addEventListener('touchstart', esconder, { passive: true });
-    setTimeout(esconder, 14000);
-  }
-</script>
