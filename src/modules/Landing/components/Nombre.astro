@@ -24,9 +24,6 @@ const partes = [
         {
           partes.map((p) => (
             <div class="flex flex-col gap-3">
-              <span class="font-display text-[clamp(3.5rem,10vw,6rem)] font-700 leading-[0.82] tracking-[-0.04em] text-naranja-titular">
-                {p.silaba}
-              </span>
               <p class="text-titulo font-500 text-azul">
                 {p.antes}{' '}
                 <span class="box-decoration-clone rounded-[2px] bg-naranja px-2.5 py-0.5 text-azul-hondo">
@@ -34,6 +31,10 @@ const partes = [
                 </span>
                 {p.despues}
               </p>
+
+              <span class="font-display text-[clamp(3.5rem,10vw,6rem)] font-700 leading-[0.82] tracking-[-0.04em] text-naranja-titular">
+                {p.silaba}
+              </span>
             </div>
           ))
         }
