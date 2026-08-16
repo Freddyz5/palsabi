@@ -76,22 +76,20 @@ const colorPlacaTexto = tono === 'tinta' ? '#F4F2EE' : '#FFFFFF';
       direccion === 'fila' ? 'flex-col items-start gap-[0.14em]' : 'contents',
     ]}
   >
-    <div class="flex gap-1">
-      <span
-        class:list={[
-          'font-display font-700 leading-[0.9] tracking-[-0.03em]',
-          direccion === 'fila' ? 'text-[1.28em]' : 'text-[1.62em] mt-[0.12em]',
-        ]}
-        style={`color:${colorNombre}`}>Pal<span class="text-azul">abra</span></span
-      >
-      <span
-        class:list={[
-          'font-display font-700 leading-[0.9] tracking-[-0.03em]',
-          direccion === 'fila' ? 'text-[1.28em]' : 'text-[1.62em] mt-[0.12em]',
-        ]}
-        style={`color:${colorNombre}`}>Sabi<span class="text-azul">a</span></span
-      >
-    </div>
+    <span
+      class:list={[
+        'font-display font-700 leading-[0.9] tracking-[-0.03em]',
+        direccion === 'fila' ? 'text-[1.28em]' : 'text-[1.62em] mt-[0.12em]',
+      ]}
+      style={`color:${colorNombre}`}>Pal<span class="text-azul">abra</span></span
+    >
+    <span
+      class:list={[
+        'font-display font-700 leading-[0.9] tracking-[-0.03em]',
+        direccion === 'fila' ? 'text-[1.28em]' : 'text-[1.62em] mt-[0.12em]',
+      ]}
+      style={`color:${colorNombre}`}>Sabi<span class="text-azul">a</span></span
+    >
 
     {
       descriptor && (
