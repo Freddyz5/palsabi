@@ -76,13 +76,22 @@ const colorPlacaTexto = tono === 'tinta' ? '#F4F2EE' : '#FFFFFF';
       direccion === 'fila' ? 'flex-col items-start gap-[0.14em]' : 'contents',
     ]}
   >
-    <span
-      class:list={[
-        'font-display font-700 leading-[0.9] tracking-[-0.03em]',
-        direccion === 'fila' ? 'text-[1.28em]' : 'text-[1.62em] mt-[0.12em]',
-      ]}
-      style={`color:${colorNombre}`}>Palsabi</span
-    >
+    <div class="flex gap-1">
+      <span
+        class:list={[
+          'font-display font-700 leading-[0.9] tracking-[-0.03em]',
+          direccion === 'fila' ? 'text-[1.28em]' : 'text-[1.62em] mt-[0.12em]',
+        ]}
+        style={`color:${colorNombre}`}>Pal<span class="text-azul">abra</span></span
+      >
+      <span
+        class:list={[
+          'font-display font-700 leading-[0.9] tracking-[-0.03em]',
+          direccion === 'fila' ? 'text-[1.28em]' : 'text-[1.62em] mt-[0.12em]',
+        ]}
+        style={`color:${colorNombre}`}>Sabi<span class="text-azul">a</span></span
+      >
+    </div>
 
     {
       descriptor && (
@@ -90,7 +99,7 @@ const colorPlacaTexto = tono === 'tinta' ? '#F4F2EE' : '#FFFFFF';
           class:list={[
             'rotulo rounded-[0.28em]',
             direccion === 'fila'
-              ? 'px-[0.5em] py-[0.22em] text-[0.42em] tracking-[0.1em]'
+              ? 'px-[0.5em] py-[0.22em] text-[0.42em] tracking-widest'
               : 'mt-[0.28em] px-[0.62em] py-[0.28em] text-[0.42em] tracking-[0.11em]',
           ]}
           style={`background:${colorPlaca};color:${colorPlacaTexto}`}

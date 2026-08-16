@@ -4,9 +4,9 @@ import Boton from './Boton.astro';
 import { whatsapp } from '../constants/config';
 
 const enlaces = [
+  { href: '#nombre', texto: 'El significado' },
   { href: '#seleccion', texto: 'La selección' },
-  { href: '#pedir', texto: 'Cómo pedir' },
-  { href: '#stand', texto: 'El stand' },
+  { href: '#catalogo', texto: 'El catálogo digital' },
 ];
 ---
 
@@ -14,7 +14,7 @@ const enlaces = [
   <!-- La cabecera también es margen quieto: una tira de papel sobre el agua.
        Sin ella el logotipo y los enlaces quedan flotando sobre la corriente. -->
   <div
-    class="margen-quieto etiqueta mx-auto flex max-w-[1240px] items-center justify-between gap-6 rounded-full py-2.5 pl-4 pr-2.5 sm:pl-6 sm:pr-3"
+    class="margen-quieto etiqueta mx-auto flex max-w-310 items-center justify-between gap-6 rounded-full py-2.5 pl-4 pr-2.5 sm:pl-6 sm:pr-3"
   >
     <a href="/" class="rounded-lg" aria-label="Palsabi, librería cristiana — inicio">
       <Logo direccion="fila" class="marca-fila" />
