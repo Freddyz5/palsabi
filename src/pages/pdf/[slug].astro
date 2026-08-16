@@ -1,0 +1,157 @@
+---
+/**
+ * El generador de catálogos en PDF, versión 1. No hay librería de PDF ni
+ * backend: esta es una página normal, con su propio CSS de impresión, y el
+ * botón dispara window.print(). Cuando el visitante elige "Guardar como PDF"
+ * en el diálogo del navegador, el archivo que sale es un PDF de verdad —
+ * portada + lista con foto, título, autor y precio, en los colores de marca.
+ */
+import Base from '../../modules/Landing/layouts/Base.astro';
+import Logo from '../../modules/Landing/components/Logo.astro';
+import {
+  CATEGORIAS,
+  PRODUCTOS_DEMO,
+  COLECCIONES_CURADAS,
+  slugificar,
+  type ProductoDemo,
+} from '../../modules/Landing/data/catalogo-demo';
+import { SITIO, WHATSAPP_LEGIBLE, INSTAGRAM } from '../../modules/Landing/constants/config';
+
+interface Vitrina {
+  titulo: string;
+  productos: ProductoDemo[];
+}
+
+export function getStaticPaths() {
+  const porCategoria = CATEGORIAS.map((categoria) => ({
+    params: { slug: slugificar(categoria) },
+    props: {
+      titulo: categoria,
+      productos: PRODUCTOS_DEMO.filter((p) => p.categoria === categoria),
+    } satisfies Vitrina,
+  }));
+
+  const curadas = COLECCIONES_CURADAS.map((coleccion) => ({
+    params: { slug: coleccion.slug },
+    props: {
+      titulo: coleccion.titulo,
+      productos: PRODUCTOS_DEMO.filter((p) => coleccion.productoIds.includes(p.id)),
+    } satisfies Vitrina,
+  }));
+
+  return [...porCategoria, ...curadas];
+}
+
+const { titulo, productos } = Astro.props as Vitrina;
+
+const fecha = new Date().toLocaleDateString('es-EC', { month: 'long', year: 'numeric' });
+---
+
+<Base titulo={`Catálogo para imprimir — ${titulo} · ${SITIO.nombre}`}>
+  <main id="contenido" class="min-h-screen bg-agua-honda px-4 py-10 sm:py-14">
+    <div class="no-imprimir mx-auto mb-6 flex max-w-[720px] items-center justify-between">
+      <a
+        href="/#catalogo"
+        class="inline-flex items-center gap-1.5 font-texto text-menudo font-500 text-azul-suave transition-colors duration-200 hover:text-azul"
+      >
+        <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9.5 3 4.5 8l5 5" />
+        </svg>
+        Volver
+      </a>
+      <button
+        id="boton-imprimir"
+        type="button"
+        class="inline-flex items-center gap-2 rounded-full bg-naranja px-5 py-2.5 font-display text-cuerpo font-600 text-azul-hondo shadow-[0_2px_4px_rgba(89,42,4,0.18),0_14px_30px_-14px_rgba(194,94,10,0.75)] transition-[background-color,transform] duration-300 ease-gota hover:bg-naranja-vivo hover:-translate-y-0.5"
+      >
+        Descargar / Guardar como PDF
+      </button>
+    </div>
+
+    <!-- La "hoja": en pantalla ya se ve como una página de PDF. Al imprimir, es la página. -->
+    <div id="hoja-pdf" class="mx-auto max-w-[720px] bg-white px-10 py-12 shadow-lg sm:px-14 sm:py-16">
+      <header class="flex items-start justify-between gap-6 border-b-2 border-azul pb-6">
+        <div>
+          <Logo direccion="fila" class="marca-fila" />
+          <p class="mt-1.5 font-texto text-menudo text-azul-suave">{SITIO.lema}</p>
+        </div>
+        <div class="shrink-0 text-right">
+          <p class="rotulo text-naranja-titular">Catálogo</p>
+          <p class="mt-0.5 font-texto text-menudo text-azul-suave capitalize">{fecha}</p>
+        </div>
+      </header>
+
+      <h1 class="mt-8 font-display text-rubro font-700 text-azul">{titulo}</h1>
+
+      {
+        productos.length > 0 ? (
+          <ul class="mt-6 divide-y divide-azul/10">
+            {productos.map((producto) => (
+              <li class="flex items-center gap-4 py-4">
+                {producto.portada ? (
+                  <img
+                    src={producto.portada}
+                    alt=""
+                    width="46"
+                    height="56"
+                    class="h-14 w-11 shrink-0 rounded-sm object-cover"
+                  />
+                ) : (
+                  <div class="h-14 w-11 shrink-0 rounded-sm" style={`background: var(--color-${producto.tinta})`} />
+                )}
+                <div class="min-w-0 flex-1">
+                  <p class="font-texto text-cuerpo font-600 text-azul">{producto.titulo}</p>
+                  <p class="font-texto text-menudo text-azul-suave">{producto.autor}</p>
+                </div>
+                <p class="shrink-0 font-display text-cuerpo font-600 text-azul">${producto.precio.toFixed(2)}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="mt-6 font-texto text-cuerpo text-azul-suave">Sin libros en esta categoría todavía.</p>
+        )
+      }
+
+      <footer class="mt-10 border-t border-azul/10 pt-6 font-texto text-menudo text-azul-suave">
+        <p>Pedidos por WhatsApp: {WHATSAPP_LEGIBLE} · Instagram: @{INSTAGRAM}</p>
+      </footer>
+    </div>
+  </main>
+
+  <style>
+    #hoja-pdf,
+    #hoja-pdf * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    @media print {
+      .no-imprimir {
+        display: none !important;
+      }
+      body {
+        background: white !important;
+      }
+      main {
+        min-height: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+      }
+      #hoja-pdf {
+        box-shadow: none !important;
+        margin: 0 !important;
+        max-width: none !important;
+        padding: 0 !important;
+      }
+    }
+
+    @page {
+      size: A4;
+      margin: 14mm;
+    }
+  </style>
+
+  <script>
+    document.getElementById('boton-imprimir')?.addEventListener('click', () => window.print());
+  </script>
+</Base>

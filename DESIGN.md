@@ -1,11 +1,12 @@
 ---
 name: Palsabi
-description: Librería cristiana cuya página es una cuenca de tinta flotando sobre agua.
+description: Librería cristiana cuya página es una hoja impresa: trama de medio tono, filete de margen y sellos de tinta.
 colors:
   agua: "#f4f2ee"
   agua-honda: "#e7e3dc"
   naranja: "#f8831d"
   naranja-hondo: "#c25e0a"
+  naranja-vivo: "#ff9836"
   naranja-texto: "#a34e06"
   amarillo: "#fada57"
   azul: "#213d53"
@@ -80,7 +81,7 @@ components:
     rounded: "{rounded.pastilla}"
     padding: "1rem 1.5rem"
   boton-tinta-hover:
-    backgroundColor: "#ff9836"
+    backgroundColor: "{colors.naranja-vivo}"
     textColor: "{colors.azul-hondo}"
   boton-contorno:
     textColor: "{colors.azul}"
@@ -112,32 +113,36 @@ components:
 
 ## Overview
 
-**Creative North Star: "La cuenca"**
+**Creative North Star: "La página impresa"**
 
-Una gota de tinta que se abre en agua quieta. Toda la página descansa sobre una
-cuenca de suminagashi calculada en vivo por la tarjeta gráfica: tinta de verdad
-flotando, respondiendo al dedo, tiñéndose más conforme el visitante baja. Encima
-de esa agua se apoyan hojas de papel. Nada más. El sistema entero es esa relación
-de dos materiales — **agua entintada y papel** — y casi todas sus reglas salen de
-mantenerla honesta.
+Tinta que se posa en el papel. Toda la página descansa sobre una hoja impresa a
+sangre: fibra de washi, trama de medio tono, filete de margen, y sellos de tinta
+que se posan conforme el visitante baja. Encima de esa hoja se apoyan otras hojas
+de papel. Nada más. El sistema entero es esa relación de dos materiales —**papel
+impreso y papel opaco**— y casi todas sus reglas salen de mantenerla honesta.
 
-La consecuencia práctica es una división estricta del trabajo: **el agua lleva el
-color y el movimiento; el papel lleva las palabras.** El naranja de Palsabi es
-intenso y por eso vive donde puede ser intenso — en la tinta, en los botones, en
-las hojas entintadas — y nunca en una letra. El texto vive siempre sobre una
-superficie opaca, y esa superficie tiene la misma fibra que el papel de la cuenca,
-porque si no, se nota que es una pantalla imitando papel.
+La consecuencia práctica es una división estricta del trabajo: **el fondo lleva el
+color; el papel lleva las palabras.** El naranja de Palsabi es intenso y por eso
+vive donde puede ser intenso — en los sellos, en los botones, en las hojas
+entintadas — y nunca en una letra. El texto vive siempre sobre una superficie
+opaca, y esa superficie tiene la misma fibra que la hoja del fondo, porque si no,
+se nota que es una pantalla imitando papel.
+
+*Nota de historia:* hasta agosto de 2026 este papel fue una cuenca de suminagashi
+—tinta flotando en agua, calculada en vivo por la tarjeta gráfica—. Se retiró
+porque leía como pintura y no como librería: la tesis de la tinta se conservó, el
+oficio cambió de marmoleador a impresor.
 
 Este mundo rechaza dos cosas por nombre: la vitrina de librería en crema con
 serif, y la parrilla de portadas tipo streaming. Palsabi no es un catálogo
 infinito; es una selección con mano humana, y la página tiene que verse así.
 
 **Key Characteristics:**
-- Agua blanco papel generosa; la tinta es una isla, no un fondo
+- Papel generoso; el sello de tinta es una mancha suelta, no un fondo
 - Naranja de marca saturado, siempre como superficie, jamás como letra
 - Cuatro registros de papel con jerarquía real, no un panel repetido
 - Fibra de washi en todas las superficies, con su dosis por tinta
-- Un solo momento de movimiento autoral: la cuenca
+- Un solo momento de movimiento autoral: el sello que se posa
 
 ## Colors
 
@@ -162,7 +167,7 @@ falta para que el texto se leyera.
 
 ### Tertiary
 - **Amarillo** (`#FADA57`): la tinta que aparece donde el tinte se adelgaza. Vive
-  casi solo dentro de la cuenca; en la interfaz es un acento raro a propósito.
+  casi solo en los sellos del fondo; en la interfaz es un acento raro a propósito.
 
 ### Neutral
 - **Agua** (`#F4F2EE`): el fondo de todo. Papel mojado, apenas cálido. Nunca crema.
@@ -176,9 +181,9 @@ texto. Sobre el agua da 2,3:1. Si hace falta naranja en una palabra, se usa
 `#A34E06` en cuerpo o `#C25E0A` en titular grande; si hace falta texto sobre
 naranja, va en `#16293A`.
 
-**La regla de la gota nueva.** Dentro de la cuenca, la gota más reciente es
-siempre la más saturada, y el tinte se aclara a medida que se extiende. Nunca al
-revés: rompe la lectura de profundidad del agua.
+**La regla del sello nuevo.** El sello más reciente es siempre el más saturado, y
+la tinta se aclara del centro hacia el canto. Nunca al revés: un sello con el
+borde más oscuro que el núcleo no es tinta, es un anillo dibujado.
 
 ## Typography
 
@@ -236,16 +241,17 @@ escalas distintas (22 / 17 / 15rem) y arranques de columna escalonados; no es un
 cuadrícula de fichas iguales, y no debe volver a serlo. En móvil todo se apila a
 una columna.
 
-**Comportamiento de la cuenca según el ancho:** por debajo de 900px el contenido
-ocupa todo el ancho, así que las islas de tinta se siembran arriba y abajo del
-encuadre y dejan limpia la banda central. En ancho, la isla principal vive a la
-derecha, donde el papel no llega.
+**Comportamiento del fondo según el ancho:** por debajo de 900px el contenido
+ocupa todo el ancho, así que los sellos se siembran arriba y abajo del encuadre y
+dejan limpia la banda central. En ancho, el sello principal vive a la derecha,
+donde el papel no llega. El filete de margen se estrecha con la ventana
+(`clamp(1.25rem, 4vw, 4.5rem)`) para no chocar con el margen de las secciones.
 
 ## Elevation & Depth
 
-Sistema **de láminas**: todo es una hoja apoyada sobre agua, y la profundidad se
+Sistema **de láminas**: todo es una hoja apoyada sobre el papel impreso, y la profundidad se
 cuenta con sombras suaves, desplazadas y difusas —nunca con un halo sin offset—
-más el hecho de que el agua se ve correr alrededor. Cuatro alturas, y cada una
+más el hecho de que el fondo se ve seguir alrededor. Cuatro alturas, y cada una
 significa algo distinto.
 
 ### Shadow Vocabulary
@@ -274,11 +280,11 @@ el color: queda declarada y no se ve, que es peor que no ponerla.
 
 Cuatro radios, y cada uno nombra un registro: **2px** la tira, **10px** la
 etiqueta, **20px** la hoja, **24px** la hoja entintada. Los controles son
-pastillas completas (`9999px`) sin excepción — botones, chips, la pista de la
-cuenca, la cabecera.
+pastillas completas (`9999px`) sin excepción — botones, chips, la cabecera.
 
-No hay bordes de color. La única línea del sistema es el filo de un pelo de la
-tira, y existe justamente para que esa hoja no necesite sombra.
+No hay bordes de color. Las únicas líneas del sistema son el filo de un pelo de la
+tira —que existe justamente para que esa hoja no necesite sombra— y el filete de
+margen del fondo, que es parte del papel y no de ningún componente.
 
 ## Components
 
@@ -301,23 +307,32 @@ tira, y existe justamente para que esa hoja no necesite sombra.
   entintada.
 
 ### Navigation
-La cabecera es una pastilla de papel flotando sobre el agua, con el logotipo a la
+La cabecera es una pastilla de papel apoyada en la hoja, con el logotipo a la
 izquierda, tres enlaces al centro y la llamada a WhatsApp a la derecha. Los enlaces
 son azul al 75% y al pasar el puntero crecen un subrayado naranja de 1px desde la
 izquierda. Debajo de `md` los enlaces se ocultan y queda el logotipo con el botón.
 
-### La cuenca (componente firma)
-El fondo es un solucionador de fluidos en WebGL2 —advección semi-lagrangiana con
-proyección de presión de Jacobi— donde cada gota **desplaza** la tinta anterior en
-lugar de pintarse encima (`sqrt(d²−r²)` conserva el área), que es exactamente como
-el suminagashi hace sus anillos concéntricos. Dos pasadas cortas de abanico los
-pluman. Responde al puntero y al dedo; cada sección suelta su propia tinta al
-entrar; elegir un libro suelta la suya.
+### La imprenta (componente firma)
+El fondo es una hoja impresa fija detrás de toda la página, en cuatro capas: el
+papel, los sellos, la trama de medio tono (punto de `0,9px` en celda de `7px`, al
+30% de azul) y el filete de margen. Encima, la fibra de washi multiplicada, la
+misma de las hojas de contenido.
 
-Se cuida sola: baja la resolución de cálculo en equipos modestos, se duerme a los
-14 segundos sin actividad, se detiene con la pestaña oculta, y ante
-`prefers-reduced-motion` o falta de WebGL2 sirve una marmoleada ya asentada
-horneada del mismo solucionador.
+Cada sección **sella** su tinta al entrar —una vez, nunca dos— y elegir un libro
+sella la suya donde está la mano. El sello se posa con `mix-blend-mode: multiply`,
+porque la tinta impresa oscurece el papel en lugar de posarse encima: esa es toda
+la diferencia entre imprimir y pintar, y es la razón de que este fondo no lea como
+un cuadro. No viaja, no se desplaza, no responde al puntero. La página guarda como
+mucho siete sellos; los más viejos se retiran.
+
+Contrato con las secciones: `data-tinta` (naranja | azul | amarillo | agua),
+`data-gota-x` / `data-gota-y` en 0–1 con origen abajo-izquierda, `data-gota-fuerza`
+para el tamaño, y el evento `palsabi:gota` para los libros marcados a mano. Con
+`prefers-reduced-motion` los sellos aparecen ya posados, sin animación.
+
+**La regla del punto que no se cuenta.** La trama es el grano del material, no una
+retícula. Si el visitante puede contar los puntos, está demasiado fuerte y el fondo
+deja de ser papel para volverse plantilla.
 
 ### La bandeja (componente firma)
 Los libros marcados se acumulan en una barra de tinta al pie que redacta sola el
@@ -340,11 +355,11 @@ dentro.
 
 ### Don't:
 - **Don't** escribir texto en `#F8831D`, ni en blanco sobre `#F8831D`.
-- **Don't** poner campos de color a sangre. Un color plano pegado sobre el agua
-  siempre deja costura; lo que va sobre el agua son hojas, con su canto visible.
+- **Don't** poner campos de color a sangre. Un color plano pegado sobre el fondo
+  siempre deja costura; lo que va encima son hojas, con su canto visible.
 - **Don't** volver a la cuadrícula de tres fichas iguales en la selección.
 - **Don't** usar un rótulo como antetítulo encima de un titular.
-- **Don't** apagar la cuenca entera para resolver un choque local: se mueve la
-  tinta, no se le baja el volumen.
+- **Don't** apagar el fondo entero para resolver un choque local: se mueve el
+  sello, no se le baja el volumen.
 - **Don't** declarar un material que no se ve. Si una textura no cambia los píxeles,
   o se aplica de otra forma o se quita.

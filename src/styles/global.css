@@ -15,6 +15,11 @@
   /* Muestreadas de brand/ref-3.png y ref-2.png. No se retocan. */
   --color-naranja: #f8831d;
   --color-naranja-hondo: #c25e0a;
+  /* La gota recién caída, un punto más encendida que el naranja de marca: es el
+     hover de todo botón entintado. Estaba escrita a mano en cinco archivos
+     —era el único miembro de la familia naranja sin nombre— y por eso se
+     escapaba de la paleta cada vez que alguien pegaba un botón nuevo. */
+  --color-naranja-vivo: #ff9836;
   --color-amarillo: #fada57;
   --color-azul: #213d53;
   --color-azul-hondo: #16293a;
@@ -65,6 +70,13 @@
 
   --text-menudo: 0.9rem;
   --text-menudo--line-height: 1.5;
+
+  /* El sello de agua de la portada. No es un escalón de la escala —no hay texto
+     que leer ahí— sino una medida de elemento gráfico: el nombre escrito en el
+     papel, del ancho de la caja, detrás de los libros. */
+  --text-sello: clamp(4rem, 15vw, 12rem);
+  --text-sello--line-height: 0.85;
+  --text-sello--letter-spacing: -0.04em;
 
   --ease-gota: cubic-bezier(0.16, 1, 0.3, 1);
 }
