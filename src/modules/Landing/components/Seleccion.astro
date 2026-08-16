@@ -2,6 +2,33 @@
 import { LIBROS } from '../data/libros';
 import { whatsapp } from '../constants/config';
 import Boton from './Boton.astro';
+
+/**
+ * La selección comparte la disciplina del catálogo —misma rejilla, misma
+ * tarjeta de papel, misma altura— y se separa de él en tres cosas, que son
+ * justo las que hacen que esto sea una recomendación y no un listado:
+ *
+ *  1. La portada se ve entera sobre su propia tinta. El catálogo recorta todas
+ *     a la misma banda; aquí cada libro trae el color con el que cae al agua.
+ *  2. Cada tarjeta lleva la nota de la librería —a quién le sirve—, que es lo
+ *     único que un catálogo no puede escribir por ti.
+ *  3. No hay precio ni filtro: esto no se navega, se recomienda.
+ */
+
+/** El título dice cuántos son de verdad, sin que haya que acordarse de editarlo. */
+const CUANTOS: Record<number, string> = {
+  3: 'Tres',
+  4: 'Cuatro',
+  5: 'Cinco',
+  6: 'Seis',
+  7: 'Siete',
+  8: 'Ocho',
+  9: 'Nueve',
+  10: 'Diez',
+  11: 'Once',
+  12: 'Doce',
+};
+const cuantos = CUANTOS[LIBROS.length] ?? String(LIBROS.length);
 ---
 
 <section
@@ -11,10 +38,11 @@ import Boton from './Boton.astro';
   data-gota-x="0.5"
   data-gota-y="0.42"
 >
-  <div class="mx-auto max-w-[1240px]">
-    <div class="margen-quieto tira max-w-[46rem] px-7 py-8 sm:px-10 sm:py-10">
-      <h2 class="text-titulo font-700 text-azul">Tres que nos gusta recomendar</h2>
-      <p class="mt-4 max-w-[52ch] font-texto text-guia leading-relaxed text-azul/75">
+  <div class="mx-auto max-w-310">
+    <div class="margen-quieto tira mx-auto max-w-220 px-7 py-8 text-center sm:px-10 sm:py-10">
+      <p class="rotulo text-azul-suave">Elegidos a mano</p>
+      <h2 class="mt-4 text-titulo font-700 text-azul">{cuantos} que nos gusta recomendar</h2>
+      <p class="mx-auto mt-4 max-w-[52ch] font-texto text-guia leading-relaxed text-azul/75">
         No somos un catálogo infinito. Elegimos pocos y los conocemos: por eso podemos decirte cuál
         le sirve a quién. Marca los que te interesan y te llegan escritos al chat.
       </p>
@@ -24,40 +52,24 @@ import Boton from './Boton.astro';
     </div>
 
     {/*
-      Nada de tres tarjetas iguales: eso es la parrilla de portadas que la
-      tesis de esta página rechaza por nombre. Los libros flotan directamente
-      sobre el agua, a escalas distintas y a alturas distintas —como tinta que
-      se soltó en momentos distintos— y solo el texto se apoya en papel.
+      La rejilla va centrada por dentro: si el número de libros no divide en
+      filas exactas, el resto se queda en el medio y no colgando a la izquierda.
+      Eso es `flex` y no `grid` — es lo único que sabe centrar una fila corta.
     */}
-    <ul class="mt-14 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-12 lg:gap-y-24">
+    <ul class="rejilla-recomendados mt-12 sm:mt-14">
       {
-        LIBROS.map((libro, i) => (
-          <li
-            class:list={[
-              'lg:flex lg:flex-col',
-              // Los libros se quedan en los dos tercios izquierdos: la isla de
-              // tinta vive a la derecha y una portada a todo color encima del
-              // plumón saturado se pierde. El agua se queda con su lado.
-              // Dos a la izquierda y el tercero metido en la isla de tinta,
-              // sobre la cola plumeada y no sobre el núcleo: el marmoleado
-              // vuelve a ser el campo donde están los libros, no un adorno
-              // aparcado en el margen derecho.
-              i === 0 && 'lg:col-span-4 lg:col-start-1',
-              i === 1 && 'lg:col-span-4 lg:col-start-5 lg:mt-28',
-              i === 2 && 'lg:col-span-3 lg:col-start-9 lg:mt-4',
-            ]}
-          >
+        LIBROS.map((libro) => (
+          <li>
             <article
-              class="group/libro flex h-full flex-col"
+              class="tarjeta-libro margen-quieto etiqueta group/libro flex w-full flex-col overflow-hidden"
               data-libro={libro.id}
               data-tinta-libro={libro.tinta}
+              style={`--tinta: var(--color-${libro.tinta});`}
             >
-              <div
-                class:list={[
-                  'flex items-end',
-                  i === 0 ? 'h-[22rem]' : i === 1 ? 'h-[17rem]' : 'h-[15rem]',
-                ]}
-              >
+              {/* La portada entera, apoyada en su propia tinta. El catálogo las
+                  recorta todas a la misma banda; una recomendación enseña el
+                  libro como es. */}
+              <div class="cubierta-tinta flex h-60 items-end justify-center px-5 pt-6">
                 <img
                   src={libro.portada}
                   alt={`Portada de ${libro.titulo}`}
@@ -65,42 +77,54 @@ import Boton from './Boton.astro';
                   height="352"
                   loading="lazy"
                   decoding="async"
-                  class="max-h-full w-auto object-contain drop-shadow-[0_18px_28px_rgba(22,41,58,0.34)] transition-transform duration-500 ease-gota group-hover/libro:-translate-y-2"
+                  referrerpolicy="no-referrer"
+                  class="portada-libro max-h-full w-auto object-contain transition-transform duration-500 ease-gota group-hover/libro:-translate-y-1.5"
                 />
               </div>
 
-              <div class="margen-quieto etiqueta mt-6 flex flex-1 flex-col px-6 pt-6 pb-6">
-                <h3 class="font-display text-rubro font-600 leading-[1.15] tracking-[-0.02em] text-azul">
+              <div class="flex flex-1 flex-col px-5 pt-5 pb-5">
+                <h3 class="font-display text-cuerpo font-600 leading-snug text-azul">
                   {libro.titulo}
                 </h3>
-                <p class="mt-2 font-texto text-menudo leading-snug text-azul-suave">{libro.autor}</p>
-
-                <p class="mt-4 font-texto text-cuerpo leading-relaxed text-azul/80">
+                <p class="mt-1 font-texto text-menudo leading-snug text-azul-suave">{libro.autor}</p>
+                <p class="mt-2.5 font-texto text-menudo leading-relaxed text-azul/70">
                   {libro.bajada}
                 </p>
-                <p class="mt-3 font-texto text-cuerpo leading-relaxed text-naranja-texto">
-                  {libro.para}
-                </p>
 
-                <button
-                  type="button"
-                  class="boton-anadir mt-6 flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 font-display text-cuerpo font-600 ring-[1.5px] ring-inset transition-all duration-300 ease-gota"
-                  data-anadir={libro.id}
-                  data-titulo={libro.titulo}
-                  aria-pressed="false"
-                >
-                  <span class="icono-mas grid h-[1.15em] w-[1.15em] place-items-center">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
-                      <path d="M8 3v10M3 8h10" />
-                    </svg>
-                  </span>
-                  <span class="icono-listo hidden h-[1.15em] w-[1.15em] place-items-center">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M3.5 8.5l3 3 6-7" />
-                    </svg>
-                  </span>
-                  <span class="etiqueta-anadir">Añadir a mi pedido</span>
-                </button>
+                {/* La nota y el botón van juntos al pie de la tarjeta: así el
+                    canto entintado y el botón caen a la misma altura en toda la
+                    fila, y el título de dos líneas se come la holgura arriba, que
+                    es donde no se nota. */}
+                <div class="mt-auto pt-4">
+                  {/* La nota de la librería: lo único que un catálogo no escribe
+                      solo. Lleva el canto entintado del libro del que habla. */}
+                  <div class="nota-libreria">
+                    <p class="rotulo text-azul-suave">Nuestra nota</p>
+                    <p class="mt-1.5 font-texto text-menudo leading-relaxed text-azul/85">
+                      {libro.para}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="boton-anadir mt-5 flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 font-display text-cuerpo font-600 ring-[1.5px] ring-inset transition-all duration-300 ease-gota"
+                    data-anadir={libro.id}
+                    data-titulo={libro.titulo}
+                    aria-pressed="false"
+                  >
+                    <span class="icono-mas grid h-[1.15em] w-[1.15em] place-items-center">
+                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+                        <path d="M8 3v10M3 8h10" />
+                      </svg>
+                    </span>
+                    <span class="icono-listo hidden h-[1.15em] w-[1.15em] place-items-center">
+                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3.5 8.5l3 3 6-7" />
+                      </svg>
+                    </span>
+                    <span class="etiqueta-anadir">Añadir a mi pedido</span>
+                  </button>
+                </div>
               </div>
             </article>
           </li>
@@ -108,8 +132,8 @@ import Boton from './Boton.astro';
       }
     </ul>
 
-    <div class="margen-quieto tira mt-20 flex flex-wrap items-center gap-x-8 gap-y-5 px-7 py-7 sm:px-9">
-      <p class="max-w-[44ch] font-texto text-cuerpo leading-relaxed text-azul/75">
+    <div class="margen-quieto tira mx-auto mt-16 flex max-w-220 flex-col items-center gap-5 px-7 py-8 text-center sm:px-10">
+      <p class="max-w-[68ch] font-texto text-cuerpo leading-relaxed text-azul/75">
         Tenemos más de los que caben aquí. Cuéntanos qué buscas y te decimos qué hay, cuánto cuesta
         y si vale más la pena otro título.
       </p>
@@ -161,6 +185,80 @@ import Boton from './Boton.astro';
 </div>
 
 <style>
+  /* La rejilla: el mismo orden del catálogo —fila, columna, misma altura— pero
+     centrada. Es `flex` y no `grid` justamente por eso: cuando el número de
+     libros no da filas exactas, `grid` deja el resto pegado a la izquierda y
+     `flex` lo centra. Los anchos son fracciones exactas del ancho útil menos
+     los huecos, así que las tarjetas no se estiran ni se encogen. */
+  .rejilla-recomendados {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  /* `display:flex` en el `li` es lo que hace que la tarjeta estire hasta el alto
+     de su fila: sin eso, cada una termina donde termina su texto y la fila
+     vuelve a verse desigual, que es justo lo que había que arreglar. */
+  .rejilla-recomendados > li {
+    display: flex;
+    flex: 0 1 100%;
+    max-width: 22rem;
+  }
+
+  @media (width >= 40rem) {
+    .rejilla-recomendados > li {
+      flex-basis: calc((100% - 1.5rem) / 2);
+      max-width: none;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .rejilla-recomendados > li {
+      flex-basis: calc((100% - 4.5rem) / 4);
+    }
+  }
+
+  /* La tarjeta se levanta apenas al pasar por encima: el mismo gesto del
+     catálogo, sin convertirse en otra cosa. */
+  .tarjeta-libro {
+    transition: transform 400ms var(--ease-gota);
+  }
+  .tarjeta-libro:hover {
+    transform: translateY(-3px);
+  }
+
+  /* El agua donde flota la portada: la tinta del libro adelgazada sobre el
+     papel. Cada libro trae su color; el catálogo los recorta a todos igual. */
+  .cubierta-tinta {
+    background: color-mix(in oklab, var(--tinta) 15%, var(--color-agua));
+    box-shadow: inset 0 -1px 0 color-mix(in oklab, var(--tinta) 32%, transparent);
+  }
+
+  /* Dos sombras sobre la portada: el filo de un pelo la separa de su propia
+     tinta cuando comparten color —Cautivante sobre azul, Salvaje de corazón
+     sobre naranja— y la larga la levanta del agua. Van en `drop-shadow` y no en
+     `box-shadow` porque con `object-contain` la caja del `img` es más ancha que
+     la portada, y el borde saldría por donde no hay libro. */
+  .portada-libro {
+    filter: drop-shadow(0 0 1px rgb(22 41 58 / 0.45))
+      drop-shadow(0 14px 22px rgb(22 41 58 / 0.3));
+  }
+
+  /* La nota se abre con una regla corta entintada con el color del libro del
+     que habla: el filete de imprenta de toda la vida, no una pestaña de color
+     pegada al costado. Sin sangrar el texto, además, la nota queda a plomo con
+     el título y el autor. El amarillo se hunde un poco hacia el azul para que
+     la regla se vea sobre el papel. */
+  .nota-libreria::before {
+    content: '';
+    display: block;
+    width: 2.25rem;
+    height: 2px;
+    margin-bottom: 0.8rem;
+    background: color-mix(in oklab, var(--tinta) 82%, var(--color-azul-hondo));
+  }
+
   .boton-anadir {
     color: var(--color-azul);
     --tw-ring-color: color-mix(in oklab, var(--color-azul) 28%, transparent);
