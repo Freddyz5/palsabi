@@ -1,0 +1,815 @@
+---
+/**
+ * Propuesta del catálogo digital (fase 2). Todo lo que hay aquí es una
+ * demo hardcodeada, sin backend: sirve para que el cliente vea cómo
+ * funcionaría la idea, no para gestionar inventario real todavía.
+ */
+import {
+  CATEGORIAS,
+  PRODUCTOS_DEMO,
+  COLECCIONES_CURADAS,
+  slugificar,
+  type ProductoDemo,
+} from '../data/catalogo-demo';
+import { whatsapp } from '../constants/config';
+import TarjetaCatalogo from './TarjetaCatalogo.astro';
+import FilaInventario from './FilaInventario.astro';
+
+/**
+ * El molde en blanco. Se pinta una vez dentro de cada `<template>` y el script
+ * lo clona para dar de alta un libro, así el markup de la tarjeta y el de la
+ * fila viven en un solo archivo cada uno.
+ */
+const MOLDE: ProductoDemo = {
+  id: '',
+  titulo: '',
+  autor: '',
+  categoria: CATEGORIAS[0],
+  precio: 0,
+  stock: 0,
+  descripcion: '',
+  portada: null,
+  tinta: 'azul',
+};
+---
+
+<section
+  id="catalogo"
+  class="relative px-5 py-20 sm:px-8 sm:py-28"
+  data-tinta="azul"
+  data-gota-x="0.4"
+  data-gota-y="0.46"
+  data-gota-fuerza="1.2"
+>
+  <div class="mx-auto max-w-[1240px]">
+    <div class="margen-quieto etiqueta inline-flex items-center gap-2 px-4 py-2">
+      <span class="rotulo text-azul-suave">Una idea para el siguiente paso</span>
+    </div>
+
+    <h2 class="mt-5 text-titulo font-700 text-azul">Un catálogo que se cuida solo</h2>
+    <p class="mt-4 max-w-[52ch] font-texto text-guia leading-relaxed text-azul/75">
+      Hoy el inventario vive en la cabeza y en el chat. Esta es la propuesta: un catálogo que tus
+      clientes navegan solos, y que ustedes actualizan sin escribirle a nadie. Lo de abajo funciona:
+      cambia un precio o baja el stock en el panel de más abajo y míralo pasar aquí arriba. Todavía
+      no hay servidor detrás, así que al recargar vuelve a empezar.
+    </p>
+
+    <!-- ============ Vista pública ============ -->
+    <div class="mt-16">
+      <p class="rotulo text-azul-suave">Lo que vería tu cliente</p>
+
+      <div class="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="margen-quieto etiqueta flex items-center gap-2.5 px-4 py-2.5 sm:max-w-xs sm:flex-1">
+          <svg class="h-4 w-4 shrink-0 text-azul-suave" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <circle cx="7" cy="7" r="4.5" />
+            <path d="M13.5 13.5 10.4 10.4" stroke-linecap="round" />
+          </svg>
+          <input
+            type="search"
+            id="buscador-catalogo"
+            placeholder="Buscar por título o autor…"
+            class="w-full bg-transparent font-texto text-cuerpo text-azul placeholder:text-azul-suave/70 focus:outline-none"
+          />
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <button
+            type="button"
+            data-categoria-filtro="todos"
+            aria-pressed="true"
+            class="pastilla-categoria rounded-full px-4 py-2 font-texto text-menudo font-500 ring-[1.5px] ring-inset transition-all duration-300 ease-gota"
+          >
+            Todos
+          </button>
+          {
+            CATEGORIAS.map((categoria) => (
+              <button
+                type="button"
+                data-categoria-filtro={categoria}
+                aria-pressed="false"
+                class="pastilla-categoria rounded-full px-4 py-2 font-texto text-menudo font-500 ring-[1.5px] ring-inset transition-all duration-300 ease-gota"
+              >
+                {categoria}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <ul id="grid-catalogo" class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {PRODUCTOS_DEMO.map((producto) => <TarjetaCatalogo producto={producto} />)}
+      </ul>
+
+      {/* El molde que el panel clona al dar de alta un libro. */}
+      <template id="plantilla-tarjeta"><TarjetaCatalogo producto={MOLDE} plantilla /></template>
+
+      <p id="catalogo-vacio" class="mt-10 hidden text-center font-texto text-cuerpo text-azul-suave">
+        Nada por aquí con ese filtro — en la versión real, esto pasaría poco: se ve todo lo que hay.
+      </p>
+    </div>
+
+    <!-- ============ Vista admin ============ -->
+    <div class="mt-20" id="admin">
+      <p class="rotulo text-azul-suave">Lo que ves tú</p>
+
+      <div class="hoja-tinta mt-6 bg-azul px-6 py-8 sm:px-10 sm:py-10">
+        <div class="relative flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p class="font-display text-rubro font-600 text-agua">Inventario</p>
+            <p id="admin-resumen" class="mt-1 font-texto text-menudo text-agua/55"></p>
+          </div>
+          <span class="margen-quieto etiqueta rotulo px-3 py-1.5 text-azul">
+            Solo dueños · sin registro público
+          </span>
+        </div>
+
+        <div class="relative mt-6 flex flex-wrap items-center gap-2">
+          <button type="button" id="admin-nuevo" class="boton-panel boton-panel-lleno">
+            <svg class="h-[1.05em] w-[1.05em]" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+              <path d="M8 3v10M3 8h10" />
+            </svg>
+            Añadir libro
+          </button>
+          <button type="button" id="admin-reset" class="boton-panel">Restablecer demo</button>
+        </div>
+
+        {/* El alta: los campos mínimos para que una fila exista. La portada es
+            opcional —si no hay, el catálogo usa el marcador de color que ya
+            tenía— porque pedir una imagen para dar de alta un libro es la
+            forma más rápida de que nadie dé de alta ningún libro. */}
+        <form id="admin-form" class="relative mt-4 hidden" novalidate>
+          <div class="rejilla-alta">
+            <label class="campo-alta campo-ancho">
+              <span class="rotulo text-agua/55">Título</span>
+              <input name="titulo" required maxlength="90" class="control-inv w-full" />
+            </label>
+            <label class="campo-alta campo-ancho">
+              <span class="rotulo text-agua/55">Autor</span>
+              <input name="autor" maxlength="90" placeholder="Varios" class="control-inv w-full" />
+            </label>
+            <label class="campo-alta">
+              <span class="rotulo text-agua/55">Categoría</span>
+              <select name="categoria" class="control-inv w-full">
+                {CATEGORIAS.map((categoria) => <option value={categoria}>{categoria}</option>)}
+              </select>
+            </label>
+            <label class="campo-alta">
+              <span class="rotulo text-agua/55">Precio</span>
+              <input name="precio" type="number" min="0" step="0.5" value="0" class="control-inv w-full" />
+            </label>
+            <label class="campo-alta">
+              <span class="rotulo text-agua/55">Stock</span>
+              <input name="stock" type="number" min="0" step="1" value="1" class="control-inv w-full" />
+            </label>
+            <label class="campo-alta campo-ancho">
+              <span class="rotulo text-agua/55">Portada (opcional)</span>
+              <input name="portada" type="url" placeholder="https://…" class="control-inv w-full" />
+            </label>
+          </div>
+          <div class="mt-4 flex flex-wrap items-center gap-2">
+            <button type="submit" class="boton-panel boton-panel-lleno">Guardar libro</button>
+            <button type="button" id="admin-cancelar" class="boton-panel">Cancelar</button>
+            <p id="admin-error" role="alert" class="font-texto text-menudo text-naranja" hidden></p>
+          </div>
+        </form>
+
+        <div class="cabecera-inv" aria-hidden="true">
+          <span></span>
+          <span class="rotulo text-agua/45">Título</span>
+          <span class="col-controles">
+            <span class="campo-inv rotulo text-agua/45">Categoría</span>
+            {/* El `$` invisible ocupa lo mismo que el de la fila: sin él, el
+                rótulo arranca donde el símbolo y no donde el número. */}
+            <span class="campo-inv campo-precio rotulo text-agua/45">
+              <span class="invisible font-texto text-menudo" aria-hidden="true">$</span>Precio
+            </span>
+            <span class="campo-inv campo-stock rotulo text-center text-agua/45">Stock</span>
+            <span class="campo-inv rotulo text-agua/45">Etiqueta</span>
+          </span>
+          <span></span>
+        </div>
+
+        <div id="admin-filas" class="relative">
+          {PRODUCTOS_DEMO.map((producto) => <FilaInventario producto={producto} />)}
+        </div>
+
+        <p id="admin-vacio" class="relative mt-8 hidden text-center font-texto text-cuerpo text-agua/50">
+          El inventario quedó vacío. «Restablecer demo» lo devuelve como estaba.
+        </p>
+
+        <template id="plantilla-fila"><FilaInventario producto={MOLDE} plantilla /></template>
+
+        <div class="relative mt-7 flex flex-wrap items-center justify-between gap-4">
+          <p class="max-w-[46ch] font-texto text-menudo text-agua/60">
+            Lo que cambies aquí se ve arriba al instante, en «Lo que vería tu cliente». Es una
+            maqueta que funciona: vive en este navegador y se va al recargar. Todavía no hay
+            servidor detrás, y las páginas de <code class="text-agua/75">/c/</code> y
+            <code class="text-agua/75">/pdf/</code> siguen mostrando el catálogo de origen.
+          </p>
+          <a href="#enlaces-catalogo" class="boton-panel">Generar catálogo PDF</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Enlaces compartibles ============ -->
+    <div id="enlaces-catalogo" class="margen-quieto tira mt-14 scroll-mt-24 px-7 py-8 sm:px-10">
+      <p class="rotulo text-azul-suave">Enlaces de catálogo por categoría</p>
+      <p class="mt-2 max-w-[48ch] font-texto text-cuerpo leading-relaxed text-azul/75">
+        Cada categoría — y cualquier colección que armes después, como esta de Navidad — tiene su
+        propio enlace, listo para pegar en una historia o un estado. También se arma su catálogo en
+        PDF. Elegí uno: ya existen, no son un dibujo.
+      </p>
+
+      <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <select
+          id="generador-slug-select"
+          class="margen-quieto etiqueta px-4 py-2.5 font-texto text-cuerpo text-azul focus:outline-none sm:w-56"
+        >
+          {
+            COLECCIONES_CURADAS.map((coleccion) => (
+              <option value={coleccion.slug}>{coleccion.titulo} (colección)</option>
+            ))
+          }
+          {
+            CATEGORIAS.map((categoria) => (
+              <option value={slugificar(categoria)}>{categoria}</option>
+            ))
+          }
+        </select>
+
+        <div class="margen-quieto etiqueta flex-1 truncate px-4 py-2.5 font-texto text-cuerpo text-azul-suave">
+          palsabi.ec/c/<span id="generador-slug-texto" class="font-600 text-azul">{COLECCIONES_CURADAS[0]?.slug}</span>
+        </div>
+
+        <div class="flex shrink-0 gap-2">
+          <a
+            id="generador-slug-link"
+            href={`/c/${COLECCIONES_CURADAS[0]?.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-2 rounded-full bg-azul px-5 py-3 font-display text-cuerpo font-600 text-agua transition-[background-color,transform] duration-300 ease-gota hover:bg-azul-hondo hover:-translate-y-0.5"
+          >
+            Ver catálogo ↗
+          </a>
+          <a
+            id="generador-pdf-link"
+            href={`/pdf/${COLECCIONES_CURADAS[0]?.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-2 rounded-full ring-[1.5px] ring-inset ring-azul/25 px-5 py-3 font-display text-cuerpo font-600 text-azul transition-all duration-300 ease-gota hover:ring-azul/60"
+          >
+            Ver PDF
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Ficha de detalle: un solo diálogo que se llena según el libro elegido -->
+<dialog
+  id="ficha-libro"
+  class="ficha-dialog m-auto w-[calc(100%-2.5rem)] max-w-md rounded-[20px] p-0 backdrop:bg-azul-hondo/55"
+>
+  <div class="margen-quieto relative px-7 py-8 sm:px-9">
+    <button
+      type="button"
+      id="ficha-cerrar"
+      aria-label="Cerrar"
+      class="absolute top-4 right-4 grid h-8 w-8 place-items-center rounded-full text-azul-suave transition-colors duration-200 hover:bg-azul/8 hover:text-azul"
+    >
+      <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <path d="M3 3l10 10M13 3 3 13" />
+      </svg>
+    </button>
+
+    <div id="ficha-cubierta" class="h-48 w-full rounded-xl bg-cover bg-center"></div>
+
+    <h3 id="ficha-titulo" class="mt-5 font-display text-rubro font-600 leading-snug text-azul"></h3>
+    <p id="ficha-autor" class="mt-1 font-texto text-menudo text-azul-suave"></p>
+    <p id="ficha-estado" class="mt-3 font-texto text-menudo font-600 text-naranja-texto"></p>
+    <p id="ficha-descripcion" class="mt-3 font-texto text-cuerpo leading-relaxed text-azul/80"></p>
+
+    <div class="mt-6 flex items-center justify-between gap-4">
+      <span id="ficha-precio" class="font-display text-rubro font-600 text-azul"></span>
+      <a
+        id="ficha-whatsapp"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 rounded-full bg-naranja px-5 py-3 font-display text-cuerpo font-600 text-azul-hondo transition-[background-color,transform] duration-300 ease-gota hover:bg-naranja-vivo hover:-translate-y-0.5"
+      >
+        Preguntar por este
+      </a>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* Los botones del panel del dueño: sobre azul hondo, así que se dibujan con
+     el papel y no con la tinta. Mismo redondeo de pastilla que el resto. */
+  .boton-panel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px; /* rounded.pastilla */
+    padding: 0.6rem 1.1rem;
+    font-family: var(--font-display);
+    font-size: var(--text-menudo);
+    font-weight: 600;
+    color: color-mix(in oklab, var(--color-agua) 78%, transparent);
+    box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--color-agua) 22%, transparent);
+    transition:
+      background-color 250ms var(--ease-gota),
+      color 250ms var(--ease-gota);
+  }
+  .boton-panel:hover {
+    background: color-mix(in oklab, var(--color-agua) 12%, transparent);
+    color: var(--color-agua);
+  }
+  .boton-panel-lleno {
+    background: var(--color-naranja);
+    color: var(--color-azul-hondo);
+    box-shadow: none;
+  }
+  .boton-panel-lleno:hover {
+    background: var(--color-naranja-vivo);
+    color: var(--color-azul-hondo);
+  }
+
+  /* El formulario de alta: mismos anchos que la fila, para que al guardar el
+     libro aparezca donde el ojo ya lo estaba esperando. */
+  .rejilla-alta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.75rem;
+  }
+  .campo-alta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .campo-ancho {
+    grid-column: span 2;
+  }
+  @media (width < 40rem) {
+    .campo-ancho {
+      grid-column: span 1;
+    }
+  }
+
+  .pastilla-categoria {
+    color: var(--color-azul-suave);
+    --tw-ring-color: color-mix(in oklab, var(--color-azul) 20%, transparent);
+    background: color-mix(in oklab, white 40%, transparent);
+  }
+  .pastilla-categoria:hover {
+    color: var(--color-azul);
+  }
+  .pastilla-categoria[aria-pressed='true'] {
+    background: var(--color-azul);
+    color: var(--color-agua);
+    --tw-ring-color: var(--color-azul);
+  }
+
+  li[data-producto].hidden {
+    display: none;
+  }
+
+  .ficha-dialog {
+    border: none;
+    box-shadow:
+      0 2px 4px oklch(0.25 0.04 250 / 0.14),
+      0 30px 64px -28px oklch(0.25 0.04 250 / 0.55);
+  }
+  .ficha-dialog::backdrop {
+    backdrop-filter: blur(2px);
+  }
+</style>
+
+<script>
+  /**
+   * El catálogo, con las dos vistas conectadas a un mismo inventario que vive
+   * en memoria. Mover el stock en el panel del dueño apaga el botón de la
+   * tarjeta de arriba; borrar una fila la quita de la rejilla. No hay servidor:
+   * al recargar vuelve todo al catálogo de origen, y eso es a propósito.
+   */
+  import { whatsapp } from '../constants/config';
+  import {
+    PRODUCTOS_DEMO,
+    estadoDe,
+    ESTADO_LABEL,
+    ESTADO_CLASE,
+    slugificar,
+    type ProductoDemo,
+  } from '../data/catalogo-demo';
+
+  /** Lo del dueño: el producto más si lo enseña o no. */
+  type Fila = ProductoDemo & { visible: boolean };
+
+  const TINTAS = ['naranja', 'azul', 'amarillo'] as const;
+
+  function inventarioDeOrigen(): Fila[] {
+    return PRODUCTOS_DEMO.map((p) => ({ ...p, visible: true }));
+  }
+
+  let inventario = inventarioDeOrigen();
+  const filaDe = (id: string) => inventario.find((f) => f.id === id);
+
+  // --- Nodos fijos -------------------------------------------------------
+  const grid = document.getElementById('grid-catalogo')!;
+  const buscador = document.getElementById('buscador-catalogo') as HTMLInputElement | null;
+  const pills = document.querySelectorAll<HTMLButtonElement>('[data-categoria-filtro]');
+  const vacioPublico = document.getElementById('catalogo-vacio');
+
+  const panel = document.getElementById('admin-filas')!;
+  const resumen = document.getElementById('admin-resumen')!;
+  const vacioAdmin = document.getElementById('admin-vacio')!;
+  const formulario = document.getElementById('admin-form') as HTMLFormElement;
+  const errorAlta = document.getElementById('admin-error')!;
+  const moldeTarjeta = document.getElementById('plantilla-tarjeta') as HTMLTemplateElement;
+  const moldeFila = document.getElementById('plantilla-fila') as HTMLTemplateElement;
+
+  const tarjetaDe = (id: string) => grid.querySelector<HTMLElement>(`[data-producto="${id}"]`);
+  const filaAdminDe = (id: string) => panel.querySelector<HTMLElement>(`[data-fila="${id}"]`);
+  const campo = (raiz: Element, nombre: string) =>
+    raiz.querySelector<HTMLElement>(`[data-campo="${nombre}"]`);
+
+  // --- Pintar la tarjeta pública ----------------------------------------
+  /**
+   * Retoca la tarjeta en sitio en vez de rehacerla: rehacerla en cada tecleo
+   * del precio perdería el foco del campo que se está escribiendo.
+   */
+  function sincronizarTarjeta(fila: Fila) {
+    const tarjeta = tarjetaDe(fila.id);
+    if (!tarjeta) return;
+
+    const estado = estadoDe(fila.stock);
+    const agotado = fila.stock <= 0;
+
+    campo(tarjeta, 'titulo')!.textContent = fila.titulo;
+    campo(tarjeta, 'autor')!.textContent = fila.autor;
+    campo(tarjeta, 'precio')!.textContent = `$${fila.precio.toFixed(2)}`;
+
+    const elEstado = campo(tarjeta, 'estado')!;
+    elEstado.classList.remove(...Object.values(ESTADO_CLASE));
+    elEstado.classList.add(ESTADO_CLASE[estado]);
+    campo(tarjeta, 'estado-texto')!.textContent = ESTADO_LABEL[estado];
+
+    const elEtiqueta = campo(tarjeta, 'etiqueta')!;
+    elEtiqueta.hidden = !fila.etiqueta;
+    if (fila.etiqueta) {
+      elEtiqueta.textContent = fila.etiqueta === 'nuevo' ? 'Nuevo' : 'Recomendado';
+    }
+
+    pintarPortada(campo(tarjeta, 'portada')!, fila, 'h-44 w-full object-cover');
+
+    const boton = tarjeta.querySelector<HTMLButtonElement>('.boton-anadir')!;
+    boton.disabled = agotado;
+    boton.dataset.titulo = fila.titulo;
+    // Un libro que se agota mientras está en el pedido sale del pedido: dejarlo
+    // marcado sería prometer algo que ya no hay.
+    if (agotado && boton.getAttribute('aria-pressed') === 'true') {
+      boton.setAttribute('aria-pressed', 'false');
+      document.dispatchEvent(new CustomEvent('palsabi:quitar', { detail: { id: fila.id } }));
+    }
+    boton.querySelector('.etiqueta-anadir')!.textContent = agotado
+      ? 'Agotado por ahora'
+      : boton.getAttribute('aria-pressed') === 'true'
+        ? 'En tu pedido'
+        : 'Añadir a mi pedido';
+  }
+
+  function pintarPortada(contenedor: HTMLElement, fila: Fila, clases: string) {
+    const yaEsImagen = contenedor.firstElementChild?.tagName === 'IMG';
+    if (fila.portada) {
+      if (yaEsImagen) {
+        const img = contenedor.firstElementChild as HTMLImageElement;
+        if (img.src !== fila.portada) img.src = fila.portada;
+        img.alt = `Portada de ${fila.titulo}`;
+        return;
+      }
+      const img = document.createElement('img');
+      img.src = fila.portada;
+      img.alt = `Portada de ${fila.titulo}`;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.referrerPolicy = 'no-referrer';
+      img.className = `${clases} transition-transform duration-500 ease-gota`;
+      contenedor.replaceChildren(img);
+    } else if (yaEsImagen) {
+      // Volver al marcador de color pide rehacer el nodo; solo pasa al quitar
+      // una portada, no en cada tecleo.
+      const hueco = moldeTarjeta.content.querySelector('[data-campo="portada"]')!.cloneNode(true);
+      contenedor.replaceChildren(...(hueco as HTMLElement).childNodes);
+    }
+  }
+
+  // --- Pintar la fila del panel -----------------------------------------
+  function sincronizarFilaAdmin(fila: Fila, salvo?: HTMLElement) {
+    const nodo = filaAdminDe(fila.id);
+    if (!nodo) return;
+
+    const estado = estadoDe(fila.stock);
+    const elEstado = campo(nodo, 'estado-admin')!;
+    elEstado.dataset.estado = estado;
+    elEstado.textContent = ESTADO_LABEL[estado];
+
+    campo(nodo, 'titulo')!.textContent = fila.titulo;
+    campo(nodo, 'autor')!.textContent = fila.autor;
+
+    // `salvo` es el control que el dueño tiene bajo el dedo: reescribirlo
+    // mientras teclea le movería el cursor a mitad del número.
+    const precio = nodo.querySelector<HTMLInputElement>('[data-editar="precio"]')!;
+    if (precio !== salvo) precio.value = fila.precio.toFixed(2);
+    const stock = nodo.querySelector<HTMLInputElement>('[data-editar="stock"]')!;
+    if (stock !== salvo) stock.value = String(fila.stock);
+  }
+
+  // --- Filtros y recuentos ----------------------------------------------
+  let categoriaActiva = 'todos';
+
+  function aplicarFiltro() {
+    const texto = (buscador?.value ?? '').trim().toLowerCase();
+    let visibles = 0;
+
+    inventario.forEach((fila) => {
+      const tarjeta = tarjetaDe(fila.id);
+      if (!tarjeta) return;
+
+      const coincideCategoria = categoriaActiva === 'todos' || fila.categoria === categoriaActiva;
+      const coincideTexto =
+        texto === '' ||
+        fila.titulo.toLowerCase().includes(texto) ||
+        fila.autor.toLowerCase().includes(texto);
+      // Tres condiciones y un solo sitio que decide: el interruptor del panel
+      // manda igual que el filtro, y ninguno pisa al otro.
+      const seVe = fila.visible && coincideCategoria && coincideTexto;
+
+      tarjeta.classList.toggle('hidden', !seVe);
+      if (seVe) visibles++;
+    });
+
+    vacioPublico?.classList.toggle('hidden', visibles > 0);
+  }
+
+  function contar() {
+    const total = inventario.length;
+    const agotados = inventario.filter((f) => f.stock <= 0).length;
+    const pocas = inventario.filter((f) => f.stock > 0 && estadoDe(f.stock) === 'ultimas').length;
+    const ocultos = inventario.filter((f) => !f.visible).length;
+
+    const partes = [`${total} ${total === 1 ? 'título' : 'títulos'}`];
+    if (pocas) partes.push(`${pocas} con últimas unidades`);
+    if (agotados) partes.push(`${agotados} agotado${agotados === 1 ? '' : 's'}`);
+    if (ocultos) partes.push(`${ocultos} sin publicar`);
+
+    resumen.textContent = partes.join(' · ');
+    vacioAdmin.classList.toggle('hidden', total > 0);
+  }
+
+  function refrescar() {
+    aplicarFiltro();
+    contar();
+  }
+
+  // --- Ediciones del panel ----------------------------------------------
+  function editar(id: string, cambio: Partial<Fila>, control?: HTMLElement) {
+    const fila = filaDe(id);
+    if (!fila) return;
+    Object.assign(fila, cambio);
+    sincronizarTarjeta(fila);
+    sincronizarFilaAdmin(fila, control);
+    refrescar();
+  }
+
+  panel.addEventListener('input', (e) => {
+    const control = e.target as HTMLElement;
+    const nodo = control.closest<HTMLElement>('[data-fila]');
+    const id = nodo?.dataset.fila;
+    if (!id) return;
+
+    if (control.matches('[data-editar="precio"]')) {
+      const valor = Number((control as HTMLInputElement).value);
+      editar(id, { precio: Number.isFinite(valor) && valor >= 0 ? valor : 0 }, control);
+    } else if (control.matches('[data-editar="stock"]')) {
+      const valor = Math.max(0, Math.floor(Number((control as HTMLInputElement).value) || 0));
+      editar(id, { stock: valor }, control);
+    }
+  });
+
+  panel.addEventListener('change', (e) => {
+    const control = e.target as HTMLElement;
+    const id = control.closest<HTMLElement>('[data-fila]')?.dataset.fila;
+    if (!id) return;
+
+    if (control.matches('[data-editar="categoria"]')) {
+      editar(id, { categoria: (control as HTMLSelectElement).value as Fila['categoria'] }, control);
+    } else if (control.matches('[data-editar="etiqueta"]')) {
+      const valor = (control as HTMLSelectElement).value;
+      editar(id, { etiqueta: (valor || undefined) as Fila['etiqueta'] }, control);
+    }
+  });
+
+  panel.addEventListener('click', (e) => {
+    const boton = (e.target as HTMLElement).closest<HTMLElement>('button');
+    const nodo = boton?.closest<HTMLElement>('[data-fila]');
+    const id = nodo?.dataset.fila;
+    if (!boton || !id) return;
+
+    if (boton.dataset.stockDelta) {
+      const fila = filaDe(id);
+      if (fila) editar(id, { stock: Math.max(0, fila.stock + Number(boton.dataset.stockDelta)) });
+    } else if (boton.matches('[data-editar="visible"]')) {
+      const visible = boton.getAttribute('aria-pressed') !== 'true';
+      boton.setAttribute('aria-pressed', String(visible));
+      boton.title = visible ? 'Visible en el catálogo' : 'Oculto en el catálogo';
+      editar(id, { visible });
+    } else if (boton.matches('[data-editar="borrar"]')) {
+      const fila = filaDe(id);
+      if (!fila) return;
+      if (!confirm(`¿Quitar «${fila.titulo}» del inventario?`)) return;
+      inventario = inventario.filter((f) => f.id !== id);
+      tarjetaDe(id)?.remove();
+      nodo!.remove();
+      document.dispatchEvent(new CustomEvent('palsabi:quitar', { detail: { id } }));
+      refrescar();
+    }
+  });
+
+  // --- Alta ---------------------------------------------------------------
+  const botonNuevo = document.getElementById('admin-nuevo')!;
+  const botonCancelar = document.getElementById('admin-cancelar')!;
+
+  function mostrarFormulario(abierto: boolean) {
+    formulario.classList.toggle('hidden', !abierto);
+    errorAlta.hidden = true;
+    if (abierto) formulario.querySelector<HTMLInputElement>('[name="titulo"]')?.focus();
+    else formulario.reset();
+  }
+
+  botonNuevo.addEventListener('click', () => mostrarFormulario(formulario.classList.contains('hidden')));
+  botonCancelar.addEventListener('click', () => mostrarFormulario(false));
+
+  /** Un id que no choque con los que ya están, aunque se repita el título. */
+  function idLibre(titulo: string): string {
+    const base = slugificar(titulo) || 'libro';
+    let id = base;
+    let n = 2;
+    while (inventario.some((f) => f.id === id)) id = `${base}-${n++}`;
+    return id;
+  }
+
+  formulario.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const datos = new FormData(formulario);
+    const titulo = String(datos.get('titulo') ?? '').trim();
+
+    if (!titulo) {
+      errorAlta.textContent = 'El libro necesita un título.';
+      errorAlta.hidden = false;
+      formulario.querySelector<HTMLInputElement>('[name="titulo"]')?.focus();
+      return;
+    }
+
+    const fila: Fila = {
+      id: idLibre(titulo),
+      titulo,
+      autor: String(datos.get('autor') ?? '').trim() || 'Varios',
+      categoria: String(datos.get('categoria')) as Fila['categoria'],
+      precio: Math.max(0, Number(datos.get('precio')) || 0),
+      stock: Math.max(0, Math.floor(Number(datos.get('stock')) || 0)),
+      descripcion: `${titulo} — ficha por completar desde el panel.`,
+      portada: String(datos.get('portada') ?? '').trim() || null,
+      // La tinta se reparte sola: al dueño no le importa y la página necesita
+      // que los marcadores de color no salgan todos iguales.
+      tinta: TINTAS[inventario.length % TINTAS.length],
+      visible: true,
+    };
+
+    inventario.push(fila);
+    grid.append(clonar(moldeTarjeta, fila, 'producto'));
+    panel.append(clonar(moldeFila, fila, 'fila'));
+
+    sincronizarTarjeta(fila);
+    sincronizarFilaAdmin(fila);
+    mostrarFormulario(false);
+    refrescar();
+    filaAdminDe(fila.id)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
+
+  /** Saca el molde del `<template>`, lo marca con su id y le pone los valores. */
+  function clonar(molde: HTMLTemplateElement, fila: Fila, atributo: 'producto' | 'fila') {
+    const nodo = molde.content.firstElementChild!.cloneNode(true) as HTMLElement;
+    nodo.dataset[atributo] = fila.id;
+
+    // Por clase y no por `[data-ficha]`: en el molde ese atributo no existe
+    // todavía —es justo el que hay que poner— y el selector no encontraría nada.
+    const ficha = nodo.querySelector<HTMLElement>('.boton-ficha');
+    if (ficha) ficha.dataset.ficha = fila.id;
+    const anadir = nodo.querySelector<HTMLButtonElement>('.boton-anadir');
+    if (anadir) anadir.dataset.anadir = fila.id;
+
+    const categoria = nodo.querySelector<HTMLSelectElement>('[data-editar="categoria"]');
+    if (categoria) categoria.value = fila.categoria;
+    const precio = nodo.querySelector<HTMLInputElement>('[data-editar="precio"]');
+    if (precio) precio.value = fila.precio.toFixed(2);
+    const stock = nodo.querySelector<HTMLInputElement>('[data-editar="stock"]');
+    if (stock) stock.value = String(fila.stock);
+
+    const miniatura = campo(nodo, 'miniatura');
+    if (miniatura && fila.portada && miniatura.tagName !== 'IMG') {
+      const img = document.createElement('img');
+      img.src = fila.portada;
+      img.alt = '';
+      img.referrerPolicy = 'no-referrer';
+      img.className = 'h-11 w-9 shrink-0 rounded-sm object-cover';
+      img.dataset.campo = 'miniatura';
+      miniatura.replaceWith(img);
+    }
+
+    return nodo;
+  }
+
+  // --- Volver a empezar ---------------------------------------------------
+  document.getElementById('admin-reset')!.addEventListener('click', () => {
+    inventario = inventarioDeOrigen();
+    grid.replaceChildren(...inventario.map((f) => clonar(moldeTarjeta, f, 'producto')));
+    panel.replaceChildren(...inventario.map((f) => clonar(moldeFila, f, 'fila')));
+    inventario.forEach((f) => {
+      sincronizarTarjeta(f);
+      sincronizarFilaAdmin(f);
+    });
+    document.dispatchEvent(new CustomEvent('palsabi:vaciar-pedido'));
+    mostrarFormulario(false);
+    refrescar();
+  });
+
+  // --- Filtros de la vista pública ---------------------------------------
+  pills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      categoriaActiva = pill.dataset.categoriaFiltro ?? 'todos';
+      pills.forEach((p) => p.setAttribute('aria-pressed', String(p === pill)));
+      aplicarFiltro();
+    });
+  });
+
+  buscador?.addEventListener('input', aplicarFiltro);
+
+  // --- Ficha de detalle ---------------------------------------------------
+  const dialogo = document.getElementById('ficha-libro') as HTMLDialogElement | null;
+  const cerrar = document.getElementById('ficha-cerrar');
+  const elCubierta = document.getElementById('ficha-cubierta');
+  const elTitulo = document.getElementById('ficha-titulo');
+  const elAutor = document.getElementById('ficha-autor');
+  const elEstado = document.getElementById('ficha-estado');
+  const elDescripcion = document.getElementById('ficha-descripcion');
+  const elPrecio = document.getElementById('ficha-precio');
+  const elWhatsapp = document.getElementById('ficha-whatsapp') as HTMLAnchorElement | null;
+
+  // Delegado y no enganchado tarjeta por tarjeta: las que se dan de alta
+  // después tienen que abrir su ficha igual que las que ya estaban.
+  grid.addEventListener('click', (e) => {
+    const boton = (e.target as HTMLElement).closest<HTMLElement>('[data-ficha]');
+    const producto = boton && filaDe(boton.dataset.ficha ?? '');
+    if (!producto || !dialogo) return;
+
+    if (elTitulo) elTitulo.textContent = producto.titulo;
+    if (elAutor) elAutor.textContent = producto.autor;
+    if (elDescripcion) elDescripcion.textContent = producto.descripcion;
+    if (elPrecio) elPrecio.textContent = `$${producto.precio.toFixed(2)}`;
+    if (elEstado) elEstado.textContent = ESTADO_LABEL[estadoDe(producto.stock)] ?? '';
+    if (elCubierta) {
+      elCubierta.style.background = producto.portada
+        ? `center / cover no-repeat url(${producto.portada})`
+        : `color-mix(in oklab, var(--color-${producto.tinta}) 24%, var(--color-agua))`;
+    }
+    if (elWhatsapp) {
+      elWhatsapp.href = whatsapp(
+        `Hola Palsabi 👋 Me interesa «${producto.titulo}». ¿Me cuentan precio y si lo tienen?`,
+      );
+    }
+
+    dialogo.showModal();
+  });
+
+  cerrar?.addEventListener('click', () => dialogo?.close());
+  dialogo?.addEventListener('click', (e) => {
+    if (e.target === dialogo) dialogo.close();
+  });
+
+  // --- Generador de enlaces por categoría / colección ---------------------
+  const selectorSlug = document.getElementById('generador-slug-select') as HTMLSelectElement | null;
+  const textoSlug = document.getElementById('generador-slug-texto');
+  const enlaceSlug = document.getElementById('generador-slug-link') as HTMLAnchorElement | null;
+  const enlacePdf = document.getElementById('generador-pdf-link') as HTMLAnchorElement | null;
+
+  selectorSlug?.addEventListener('change', () => {
+    const slug = selectorSlug.value;
+    if (textoSlug) textoSlug.textContent = slug;
+    if (enlaceSlug) enlaceSlug.href = `/c/${slug}`;
+    if (enlacePdf) enlacePdf.href = `/pdf/${slug}`;
+  });
+
+  refrescar();
+</script>

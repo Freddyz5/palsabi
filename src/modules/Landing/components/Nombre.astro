@@ -1,0 +1,50 @@
+---
+/**
+ * El significado del nombre. Copia real, ya publicada por Palsabi
+ * en la pieza del cambio de marca (brand/ref-2.png).
+ */
+const partes = [
+  { silaba: 'Pal', antes: 'La fuerza de la', resaltado: 'Palabra', despues: '…' },
+  { silaba: 'sabi', antes: '…con la guía de la', resaltado: 'sabiduría', despues: '' },
+];
+---
+
+<section
+  id="nombre"
+  class="relative py-20 sm:py-28"
+  data-tinta="azul"
+  data-gota-x="0.3"
+  data-gota-y="0.5"
+  data-gota-fuerza="1.15"
+>
+  <!-- Hoja de papel puesta sobre el agua, con la cuenca visible alrededor. -->
+  <div class="px-5 sm:px-8">
+    <div class="margen-quieto tira mx-auto max-w-[62rem] px-7 py-12 sm:px-14 sm:py-16">
+      <div class="grid gap-14 md:grid-cols-2 md:gap-20">
+        {
+          partes.map((p) => (
+            <div class="flex flex-col gap-3">
+              <p class="text-titulo font-500 text-azul">
+                {p.antes}{' '}
+                <span class="box-decoration-clone rounded-[2px] bg-naranja px-2.5 py-0.5 text-azul-hondo">
+                  {p.resaltado}
+                </span>
+                {p.despues}
+              </p>
+
+              <span class="font-display text-[clamp(3.5rem,10vw,6rem)] font-700 leading-[0.82] tracking-[-0.04em] text-naranja-titular">
+                {p.silaba}
+              </span>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="mt-16 max-w-[60ch] font-texto text-guia leading-relaxed text-azul/70">
+        Nuestra esencia con un nuevo nombre. Cambió cómo nos llamamos, no lo que ponemos en tus
+        manos: el mismo criterio para escoger cada título, la misma gente atendiendo del otro lado
+        del teléfono.
+      </p>
+    </div>
+  </div>
+</section>

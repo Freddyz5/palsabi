@@ -1,0 +1,43 @@
+---
+import Logo from './Logo.astro';
+import Boton from './Boton.astro';
+import { whatsapp } from '../constants/config';
+
+const enlaces = [
+  { href: '#nombre', texto: 'El significado' },
+  { href: '#seleccion', texto: 'Recomendados' },
+  { href: '#catalogo', texto: 'El catálogo digital' },
+  { href: '#admin', texto: 'Administrador' },
+];
+---
+
+<header class="relative z-30 px-4 pt-4 sm:px-6 sm:pt-5">
+  <!-- La cabecera también es margen quieto: una tira de papel sobre el agua.
+       Sin ella el logotipo y los enlaces quedan flotando sobre la corriente. -->
+  <div
+    class="margen-quieto etiqueta mx-auto flex max-w-310 items-center justify-between gap-6 rounded-full py-2.5 pl-4 pr-2.5 sm:pl-6 sm:pr-3"
+  >
+    <a href="/" class="rounded-lg" aria-label="Palsabi, librería cristiana — inicio">
+      <Logo direccion="fila" class="marca-fila" />
+    </a>
+
+    <nav aria-label="Secciones" class="hidden items-center gap-8 md:flex">
+      {
+        enlaces.map((e) => (
+          <a
+            href={e.href}
+            class="relative py-1 font-texto text-cuerpo font-500 text-azul/75 transition-colors duration-200 hover:text-azul after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-naranja after:transition-[width] after:duration-300 after:ease-gota hover:after:w-full"
+          >
+            {e.texto}
+          </a>
+        ))
+      }
+    </nav>
+
+    <Boton
+      href={whatsapp('Hola Palsabi 👋 Quisiera preguntar por un libro.')}
+      tamano="normal"
+      class="max-md:hidden">Escríbenos</Boton
+    >
+  </div>
+</header>

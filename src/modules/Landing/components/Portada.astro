@@ -1,0 +1,191 @@
+---
+import Boton from './Boton.astro';
+import { whatsapp, SITIO } from '../constants/config';
+import { LIBROS } from '../data/libros';
+
+const [ruge, mundo, parabolas, jesusTeLlama, casoCristo] = LIBROS;
+
+/**
+ * El abanico: los libros apoyados en el agua, en arco, con el más alto al
+ * centro. Solo tres portadas son reales —son las únicas que tenemos— y a los
+ * lados van dos cantos de papel entintado. Un canto no finge ser un libro que
+ * no existe: es una hoja impresa con el rótulo de lo que sí hay.
+ *
+ * Todas las piezas se apoyan en la misma línea de agua y el arco lo dibuja
+ * `alto`, la fracción de la caja del abanico que ocupa cada una. En la mayoría
+ * de pantallas el pliegue las corta por abajo, y ese corte lo pone la ventana,
+ * no la maqueta: al bajar, los libros se ven enteros.
+ */
+const abanico = [
+  { tipo: 'libro', libro: jesusTeLlama, giro: 0, alto: 62 },
+  { tipo: 'libro', libro: ruge, giro: 0, alto: 80 },
+  { tipo: 'libro', libro: mundo, giro: 0, alto: 100 },
+  { tipo: 'libro', libro: parabolas, giro: 0, alto: 78 },
+  { tipo: 'libro', libro: casoCristo, giro: 0, alto: 60 },
+] as const;
+---
+
+<section
+  id="contenido"
+  class="portada relative flex min-h-[calc(100svh-84px)] flex-col overflow-hidden px-5 pt-6 pb-3 sm:px-8 sm:pt-8"
+  data-tinta="naranja"
+  data-gota-x="0.5"
+  data-gota-y="0.46"
+  data-gota-fuerza="1.1"
+>
+  <!-- El texto sigue sin nadar sobre la corriente: la portada centrada se
+       apoya en una hoja de washi, igual que el resto de la página. -->
+  <div
+    class="margen-quieto hoja relative z-20 mx-auto max-w-275 px-6 py-7 text-center sm:px-12 sm:py-9"
+  >
+    <h1 class="text-monumental font-700 text-azul">
+      Libros con <span class="text-naranja-titular">propósito</span>, elegidos uno por uno.
+    </h1>
+
+    <p class="text-entrada mx-auto mt-5 max-w-[42ch] text-azul/80">
+      Biblias, devocionales y literatura elegidos a mano, y alguien
+      al otro lado del chat que te ayuda a escoger.
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
+      <Boton
+        href={whatsapp('Hola Palsabi 👋 Quisiera que me ayuden a escoger un libro.')}
+        tamano="grande"
+      >
+        Escríbenos por WhatsApp
+      </Boton>
+
+      <Boton
+        href="#catalogo"
+        tamano="grande"
+        variante="contorno"
+      >
+        Revisa nuestro catalogo
+      </Boton>
+
+      
+    </div>
+
+    <!-- `mt-auto` empuja el abanico al canto de la sección: los libros se apoyan
+      en el borde inferior de la pantalla, no en el final del texto. -->
+    <div class="relative my-10 pt-6 sm:pt-9">
+      <!-- El sello de agua: el nombre escrito en el papel, no encima de él.
+          Se apaga solo, detrás de los libros. -->
+      <p class="sello-agua" aria-hidden="true">{SITIO.nombre}</p>
+
+      <ul class="abanico" role="list">
+        {
+          abanico.map((pieza) => (
+            <li
+              class:list={[
+                'pieza',
+              ]}
+              style={`--giro:${pieza.giro}deg; --alto:${pieza.alto}%;`}
+            >
+              <img
+                src={pieza.libro.portada}
+                alt={`Portada de ${pieza.libro.titulo}`}
+                width="340"
+                height="421"
+                fetchpriority="high"
+                decoding="async"
+                class="h-full w-auto rounded-[3px] object-contain"
+              />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+</section>
+
+<style>
+  /* El nombre en el papel, del tamaño del ancho útil. Queda detrás de los
+     libros y no compite con el titular: es marca de agua, no rótulo. */
+  .sello-agua {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-sello);
+    line-height: var(--text-sello--line-height);
+    letter-spacing: var(--text-sello--letter-spacing);
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--color-azul) 9%, transparent);
+    user-select: none;
+  }
+
+  .abanico {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: clamp(14rem, 30vw, 23rem);
+  }
+
+  .pieza {
+    height: var(--alto);
+    transform: rotate(var(--giro));
+    transform-origin: bottom center;
+    filter: drop-shadow(0 2px 3px rgb(22 41 58 / 0.16))
+      drop-shadow(0 24px 34px rgb(22 41 58 / 0.32));
+    transition: transform 500ms var(--ease-gota);
+  }
+
+  /* El solape: cada libro se mete debajo del siguiente. En pantalla chica el
+     abanico se cierra más, porque hay menos sitio donde abrirlo. */
+  .pieza + .pieza {
+    margin-left: clamp(-7rem, -6vw, -2.5rem);
+  }
+
+  /* Los dos cantos de los extremos se solapan menos: son los únicos que llevan
+     texto propio, y si se meten tanto como los libros el rótulo se parte. */
+  .pieza:nth-child(2),
+  .pieza:nth-child(5) {
+    margin-left: clamp(-3rem, -2.5vw, -1rem);
+  }
+
+  .pieza:nth-child(1) {
+    z-index: 1;
+  }
+  .pieza:nth-child(2) {
+    z-index: 2;
+  }
+  .pieza:nth-child(3) {
+    z-index: 3;
+  }
+  .pieza:nth-child(4) {
+    z-index: 2;
+  }
+  .pieza:nth-child(5) {
+    z-index: 1;
+  }
+
+  .pieza:hover {
+    transform: rotate(var(--giro)) translateY(-0.75rem);
+    z-index: 4;
+  }
+
+  /* El canto: una hoja entintada con proporción de libro. No lleva portada
+     porque no hay portada que enseñar. */
+  .canto {
+    aspect-ratio: 5 / 7;
+    box-shadow: inset 3px 0 0 color-mix(in oklab, var(--color-azul) 18%, transparent);
+  }
+
+  /* El lomo va del lado por el que se ve la pieza. */
+  .canto-der {
+    box-shadow: inset -3px 0 0 color-mix(in oklab, var(--color-azul) 18%, transparent);
+  }
+
+  .canto-azul {
+    background-color: var(--color-azul-lavado);
+  }
+
+  .canto-amarillo {
+    background-color: var(--color-amarillo-lavado);
+  }
+</style>

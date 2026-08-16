@@ -1,0 +1,150 @@
+---
+/**
+ * Un catálogo compartible por categoría o colección — la idea de
+ * "palsabi.ec/c/navidad-ninos". Páginas reales, generadas en build time
+ * a partir del mismo array hardcodeado del resto de la demo. Sin backend:
+ * cada ruta que existe hoy se decide aquí, no en una base de datos todavía.
+ */
+import Base from '../../modules/Landing/layouts/Base.astro';
+import Imprenta from '../../modules/Landing/components/Imprenta.astro';
+import Cabecera from '../../modules/Landing/components/Cabecera.astro';
+import Boton from '../../modules/Landing/components/Boton.astro';
+import {
+  CATEGORIAS,
+  PRODUCTOS_DEMO,
+  COLECCIONES_CURADAS,
+  slugificar,
+  estadoDe,
+  ESTADO_LABEL,
+  ESTADO_CLASE,
+  type ProductoDemo,
+} from '../../modules/Landing/data/catalogo-demo';
+import { whatsapp, SITIO } from '../../modules/Landing/constants/config';
+
+interface Vitrina {
+  titulo: string;
+  descripcion: string;
+  productos: ProductoDemo[];
+}
+
+export function getStaticPaths() {
+  const porCategoria = CATEGORIAS.map((categoria) => ({
+    params: { slug: slugificar(categoria) },
+    props: {
+      titulo: categoria,
+      descripcion: `Todo lo que tenemos ahora mismo en ${categoria.toLowerCase()}.`,
+      productos: PRODUCTOS_DEMO.filter((p) => p.categoria === categoria),
+    } satisfies Vitrina,
+  }));
+
+  const curadas = COLECCIONES_CURADAS.map((coleccion) => ({
+    params: { slug: coleccion.slug },
+    props: {
+      titulo: coleccion.titulo,
+      descripcion: coleccion.descripcion,
+      productos: PRODUCTOS_DEMO.filter((p) => coleccion.productoIds.includes(p.id)),
+    } satisfies Vitrina,
+  }));
+
+  return [...porCategoria, ...curadas];
+}
+
+const { titulo, descripcion, productos } = Astro.props as Vitrina;
+
+---
+
+<Base titulo={`${titulo} · ${SITIO.nombre}`} descripcion={descripcion}>
+  <Imprenta />
+  <Cabecera />
+  <main id="contenido" class="relative px-5 pt-28 pb-24 sm:px-8 sm:pt-32">
+    <div class="mx-auto max-w-[1240px]">
+      <a
+        href="/#catalogo"
+        class="inline-flex items-center gap-1.5 font-texto text-menudo font-500 text-azul-suave transition-colors duration-200 hover:text-azul"
+      >
+        <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9.5 3 4.5 8l5 5" />
+        </svg>
+        Ver todo el catálogo
+      </a>
+
+      <div class="margen-quieto etiqueta mt-5 inline-flex items-center gap-2 px-4 py-2">
+        <span class="rotulo text-azul-suave">Catálogo compartido</span>
+      </div>
+
+      <h1 class="mt-5 text-titulo font-700 text-azul">{titulo}</h1>
+      <p class="mt-3 max-w-[52ch] font-texto text-guia leading-relaxed text-azul/75">{descripcion}</p>
+
+      {
+        productos.length > 0 ? (
+          <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {productos.map((producto) => (
+              <li>
+                <article class="margen-quieto etiqueta flex h-full flex-col overflow-hidden">
+                  {producto.portada ? (
+                    <img
+                      src={producto.portada}
+                      alt={`Portada de ${producto.titulo}`}
+                      width="290"
+                      height="352"
+                      loading="lazy"
+                      decoding="async"
+                      class="h-44 w-full object-cover object-top"
+                    />
+                  ) : (
+                    <div
+                      class="flex h-44 w-full items-center justify-center"
+                      style={`background: color-mix(in oklab, var(--color-${producto.tinta}) 22%, var(--color-agua));`}
+                    >
+                      <svg class="h-9 w-9 text-azul/35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15.5H6.5A2.5 2.5 0 0 0 4 21V5.5Z" />
+                        <path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20" />
+                      </svg>
+                    </div>
+                  )}
+
+                  <div class="flex flex-1 flex-col px-5 pt-4 pb-5">
+                    <h2 class="font-display text-cuerpo font-600 leading-snug text-azul">
+                      {producto.titulo}
+                    </h2>
+                    <p class="mt-1 font-texto text-menudo text-azul-suave">{producto.autor}</p>
+
+                    <div class="mt-3 flex items-center justify-between">
+                      <span class="font-display text-cuerpo font-600 text-azul">
+                        ${producto.precio.toFixed(2)}
+                      </span>
+                      <span class:list={['flex items-center gap-1.5 font-texto text-menudo', ESTADO_CLASE[estadoDe(producto.stock)]]}>
+                        <svg class="h-2 w-2 shrink-0" viewBox="0 0 8 8" fill="currentColor" aria-hidden="true">
+                          <circle cx="4" cy="4" r="4" />
+                        </svg>
+                        {ESTADO_LABEL[estadoDe(producto.stock)]}
+                      </span>
+                    </div>
+
+                    {producto.stock <= 0 ? (
+                      <span class="mt-4 block w-full rounded-full px-5 py-3 text-center font-display text-cuerpo font-600 text-azul-suave/60 ring-[1.5px] ring-inset ring-azul/12">
+                        Agotado por ahora
+                      </span>
+                    ) : (
+                      <Boton
+                        href={whatsapp(`Hola Palsabi 👋 Vi «${producto.titulo}» en ${titulo} y quiero preguntar por él.`)}
+                        tamano="normal"
+                        class="mt-4 w-full"
+                      >
+                        Preguntar por este
+                      </Boton>
+                    )}
+                  </div>
+                </article>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="mt-10 font-texto text-cuerpo text-azul-suave">
+            Todavía no hay libros marcados en esta categoría.
+          </p>
+        )
+      }
+    </div>
+  </main>
+</Base>

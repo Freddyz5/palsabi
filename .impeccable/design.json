@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-12T00:00:00.000Z",
+  "title": "Design System: Palsabi",
+  "extensions": {
+    "colorMeta": {
+      "naranja": {
+        "role": "primary",
+        "displayName": "Naranja Palsabi",
+        "canonical": "#f8831d",
+        "tonalRamp": [
+          "#3d1f02",
+          "#5c2f04",
+          "#7c4005",
+          "#a34e06",
+          "#c25e0a",
+          "#f8831d",
+          "#ffa457",
+          "#ffd0a3"
+        ]
+      },
+      "naranja-texto": {
+        "role": "primary",
+        "displayName": "Naranja de texto",
+        "canonical": "#a34e06",
+        "tonalRamp": [
+          "#2a1401",
+          "#452103",
+          "#5f2e04",
+          "#7c3d05",
+          "#a34e06",
+          "#c25e0a",
+          "#e2760f",
+          "#f8a35a"
+        ]
+      },
+      "azul": {
+        "role": "secondary",
+        "displayName": "Azul profundo",
+        "canonical": "#213d53",
+        "tonalRamp": [
+          "#0b141c",
+          "#101f2b",
+          "#16293a",
+          "#1b3346",
+          "#213d53",
+          "#365a76",
+          "#6d8ba5",
+          "#b9c6d0"
+        ]
+      },
+      "azul-suave": {
+        "role": "secondary",
+        "displayName": "Azul suave",
+        "canonical": "#4f6172",
+        "tonalRamp": [
+          "#1a2129",
+          "#26313b",
+          "#33404e",
+          "#415061",
+          "#4f6172",
+          "#71849a",
+          "#9caebf",
+          "#cdd7e0"
+        ]
+      },
+      "amarillo": {
+        "role": "tertiary",
+        "displayName": "Amarillo de tinta adelgazada",
+        "canonical": "#fada57",
+        "tonalRamp": [
+          "#453a09",
+          "#66550d",
+          "#877012",
+          "#a88b17",
+          "#c9a61c",
+          "#fada57",
+          "#fde894",
+          "#fef6d2"
+        ]
+      },
+      "agua": {
+        "role": "neutral",
+        "displayName": "Agua",
+        "canonical": "#f4f2ee",
+        "tonalRamp": [
+          "#2c2a26",
+          "#484540",
+          "#65615a",
+          "#837e75",
+          "#a49f95",
+          "#c7c2b8",
+          "#e7e3dc",
+          "#f4f2ee"
+        ]
+      },
+      "grafito": {
+        "role": "neutral",
+        "displayName": "Grafito",
+        "canonical": "#4f4f4f",
+        "tonalRamp": [
+          "#171717",
+          "#242424",
+          "#333333",
+          "#414141",
+          "#4f4f4f",
+          "#787878",
+          "#a8a8a8",
+          "#d6d6d6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Un solo titular por página: el de la portada."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Título de sección."
+      },
+      "rubro": {
+        "displayName": "Rubro",
+        "purpose": "Nombre de un libro, título de paso."
+      },
+      "entrada": {
+        "displayName": "Entrada",
+        "purpose": "La bajada de la portada, y solo esa."
+      },
+      "guia": {
+        "displayName": "Guía",
+        "purpose": "El párrafo que abre una sección."
+      },
+      "body": {
+        "displayName": "Cuerpo",
+        "purpose": "Texto corrido y etiqueta de control. Medida 44–52ch."
+      },
+      "menudo": {
+        "displayName": "Menudo",
+        "purpose": "Autoría, notas al pie, acciones secundarias."
+      },
+      "label": {
+        "displayName": "Rótulo",
+        "purpose": "Versalitas espaciadas para etiquetas funcionales. Nunca como antetítulo."
+      }
+    },
+    "shadows": [
+      {
+        "name": "tira",
+        "value": "0 0 0 1px oklch(0.35 0.05 250 / 0.09), 0 2px 0 oklch(0.35 0.05 250 / 0.04)",
+        "purpose": "Hoja suelta que se sostiene por el canto, no por elevarse."
+      },
+      {
+        "name": "etiqueta",
+        "value": "0 6px 18px -12px oklch(0.35 0.05 250 / 0.4)",
+        "purpose": "Pie de portada y chips. Casi no pesa."
+      },
+      {
+        "name": "hoja",
+        "value": "0 1px 2px oklch(0.35 0.05 250 / 0.06), 0 18px 44px -20px oklch(0.35 0.05 250 / 0.34)",
+        "purpose": "El papel principal, el que sostiene el argumento."
+      },
+      {
+        "name": "hoja-tinta",
+        "value": "0 2px 4px oklch(0.25 0.04 250 / 0.14), 0 30px 64px -28px oklch(0.25 0.04 250 / 0.55)",
+        "purpose": "La lámina que ya levantó la tinta. La altura mayor del sistema."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-gota",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Salida exponencial para todo cambio de estado; el gesto de una gota que se asienta."
+      },
+      {
+        "name": "duracion-control",
+        "value": "300ms",
+        "purpose": "Botones, enlaces y estados de control."
+      },
+      {
+        "name": "duracion-superficie",
+        "value": "500ms",
+        "purpose": "Portadas que se levantan y la bandeja que entra."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "cuenca-angosta",
+        "value": "900px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "medida",
+        "value": "1240px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón de tinta",
+      "kind": "button",
+      "refersTo": "boton-tinta",
+      "description": "La llamada principal. Naranja de marca con la letra en tinta azul: blanco sobre ese naranja mide 2,56:1 y no pasa AA.",
+      "html": "<a class=\"ds-boton-tinta\" href=\"#\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.24 8.24 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24Z\"/></svg><span>Escríbenos por WhatsApp</span><svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 8h10M9 4l4 4-4 4\"/></svg></a>",
+      "css": ".ds-boton-tinta { display: inline-flex; align-items: center; gap: 0.625rem; background: #f8831d; color: #16293a; border-radius: 9999px; padding: 1rem 1.5rem; font-family: Gabarito, ui-sans-serif, sans-serif; font-weight: 600; font-size: 1rem; text-decoration: none; white-space: nowrap; box-shadow: 0 2px 4px rgba(89,42,4,0.18), 0 14px 30px -14px rgba(194,94,10,0.75); transition: background-color .3s cubic-bezier(.16,1,.3,1), transform .3s cubic-bezier(.16,1,.3,1); } .ds-boton-tinta svg { width: 1.15em; height: 1.15em; flex: none; } .ds-boton-tinta svg:last-child { width: .95em; height: .95em; transition: transform .3s cubic-bezier(.16,1,.3,1); } .ds-boton-tinta:hover { background: #ff9836; transform: translateY(-2px); } .ds-boton-tinta:hover svg:last-child { transform: translateX(4px); } .ds-boton-tinta:focus-visible { outline: 3px solid #f8831d; outline-offset: 3px; }"
+    },
+    {
+      "name": "Botón de contorno",
+      "kind": "button",
+      "refersTo": "boton-contorno",
+      "description": "La acción secundaria sobre papel. Se sostiene con un aro interior, sin relleno.",
+      "html": "<a class=\"ds-boton-contorno\" href=\"#\"><span>Ver la selección</span><svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 8h10M9 4l4 4-4 4\"/></svg></a>",
+      "css": ".ds-boton-contorno { display: inline-flex; align-items: center; gap: 0.625rem; background: transparent; color: #213d53; border-radius: 9999px; padding: 1rem 1.5rem; font-family: Gabarito, ui-sans-serif, sans-serif; font-weight: 600; font-size: 1rem; text-decoration: none; box-shadow: inset 0 0 0 1.5px rgba(33,61,83,.35); transition: box-shadow .3s cubic-bezier(.16,1,.3,1), background-color .3s; } .ds-boton-contorno svg { width: .95em; height: .95em; transition: transform .3s cubic-bezier(.16,1,.3,1); } .ds-boton-contorno:hover { box-shadow: inset 0 0 0 1.5px rgba(33,61,83,.7); background: rgba(33,61,83,.06); } .ds-boton-contorno:hover svg { transform: translateX(4px); } .ds-boton-contorno:focus-visible { outline: 3px solid #f8831d; outline-offset: 3px; }"
+    },
+    {
+      "name": "Añadir a mi pedido",
+      "kind": "chip",
+      "refersTo": "boton-tinta",
+      "description": "Interruptor de la ficha de libro. Marcado, se llena de naranja con la letra en tinta y cambia el icono a visto.",
+      "html": "<button class=\"ds-anadir\" aria-pressed=\"false\"><svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M8 3v10M3 8h10\"/></svg><span>Añadir a mi pedido</span></button>",
+      "css": ".ds-anadir { display: flex; width: 100%; align-items: center; justify-content: center; gap: .5rem; border: 0; border-radius: 9999px; padding: .75rem 1.25rem; background: transparent; color: #213d53; font-family: Gabarito, ui-sans-serif, sans-serif; font-weight: 600; font-size: 1rem; box-shadow: inset 0 0 0 1.5px rgba(33,61,83,.28); transition: all .3s cubic-bezier(.16,1,.3,1); cursor: pointer; } .ds-anadir svg { width: 1.15em; height: 1.15em; } .ds-anadir:hover { box-shadow: inset 0 0 0 1.5px rgba(33,61,83,.62); background: rgba(33,61,83,.05); } .ds-anadir[aria-pressed=\"true\"] { background: #f8831d; color: #16293a; box-shadow: inset 0 0 0 1.5px #f8831d; } .ds-anadir:focus-visible { outline: 3px solid #f8831d; outline-offset: 3px; }"
+    },
+    {
+      "name": "Hoja de papel",
+      "kind": "card",
+      "refersTo": "hoja",
+      "description": "El papel principal: el que sostiene el argumento de una sección. Lleva la fibra de washi multiplicada.",
+      "html": "<div class=\"ds-hoja\"><h2>Aquí no hay carrito</h2><p>Se pide hablando. Preferimos que preguntes antes de comprar: un libro bien escogido vale más que uno vendido rápido.</p></div>",
+      "css": ".ds-hoja { background-color: #f7f6f3; border-radius: 20px; padding: 3.5rem; max-width: 42rem; box-shadow: 0 1px 2px rgba(58,68,88,.06), 0 18px 44px -20px rgba(58,68,88,.34); } .ds-hoja h2 { margin: 0; font-family: Gabarito, ui-sans-serif, sans-serif; font-weight: 700; font-size: 2.4rem; line-height: 1.04; letter-spacing: -.025em; color: #213d53; } .ds-hoja p { margin: 1.25rem 0 0; font-family: Asap, ui-sans-serif, sans-serif; font-size: 1.05rem; line-height: 1.65; color: rgba(33,61,83,.78); max-width: 52ch; }"
+    },
+    {
+      "name": "Hoja entintada",
+      "kind": "card",
+      "refersTo": "hoja-tinta-honda",
+      "description": "Una lámina que ya levantó la tinta de la cuenca. Sustituye a las franjas de color a sangre, que siempre dejaban costura.",
+      "html": "<div class=\"ds-hoja-tinta\"><h2>Cada domingo estamos con la mesa puesta</h2><p>Ahí puedes hojear antes de decidir, que para escoger un libro sigue siendo lo mejor.</p></div>",
+      "css": ".ds-hoja-tinta { position: relative; overflow: hidden; background-color: #213d53; border-radius: 24px; padding: 3.5rem; box-shadow: 0 2px 4px rgba(24,32,45,.14), 0 30px 64px -28px rgba(24,32,45,.55); } .ds-hoja-tinta h2 { margin: 0; position: relative; font-family: Gabarito, ui-sans-serif, sans-serif; font-weight: 700; font-size: 2.4rem; line-height: 1.04; letter-spacing: -.025em; color: #f4f2ee; } .ds-hoja-tinta p { margin: 1.5rem 0 0; position: relative; font-family: Asap, ui-sans-serif, sans-serif; font-size: 1.1rem; line-height: 1.65; color: rgba(244,242,238,.85); max-width: 46ch; }"
+    },
+    {
+      "name": "Rótulo",
+      "kind": "custom",
+      "refersTo": "label",
+      "description": "La tercera voz del sistema: versalitas espaciadas para etiquetar un rol o una condición. Nunca encabeza un titular.",
+      "html": "<p class=\"ds-rotulo\">Precio y disponibilidad se confirman por WhatsApp</p>",
+      "css": ".ds-rotulo { margin: 0; font-family: Asap, ui-sans-serif, sans-serif; font-size: .6875rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: #4f6172; }"
+    },
+    {
+      "name": "Cabecera",
+      "kind": "nav",
+      "refersTo": "etiqueta",
+      "description": "Pastilla de papel flotando sobre el agua. El subrayado naranja crece desde la izquierda al pasar el puntero.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\">La selección</a><a href=\"#\">Cómo pedir</a><a href=\"#\">El stand</a></nav>",
+      "css": ".ds-nav { display: inline-flex; align-items: center; gap: 2rem; background-color: #f7f6f3; border-radius: 9999px; padding: .75rem 1.5rem; box-shadow: 0 6px 18px -12px rgba(58,68,88,.4); } .ds-nav a { position: relative; padding: .25rem 0; font-family: Asap, ui-sans-serif, sans-serif; font-size: 1rem; font-weight: 500; color: rgba(33,61,83,.75); text-decoration: none; transition: color .2s; } .ds-nav a::after { content: ''; position: absolute; left: 0; bottom: 0; height: 1px; width: 0; background: #f8831d; transition: width .3s cubic-bezier(.16,1,.3,1); } .ds-nav a:hover { color: #213d53; } .ds-nav a:hover::after { width: 100%; } .ds-nav a:focus-visible { outline: 3px solid #f8831d; outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La cuenca",
+    "overview": "Una gota de tinta que se abre en agua quieta. Toda la página descansa sobre una cuenca de suminagashi calculada en vivo por la tarjeta gráfica: tinta de verdad flotando, respondiendo al dedo, tiñéndose más conforme el visitante baja. Encima de esa agua se apoyan hojas de papel. Nada más. El sistema entero es esa relación de dos materiales — agua entintada y papel — y casi todas sus reglas salen de mantenerla honesta.\n\nLa consecuencia práctica es una división estricta del trabajo: el agua lleva el color y el movimiento; el papel lleva las palabras. El naranja de Palsabi es intenso y por eso vive donde puede ser intenso — en la tinta, en los botones, en las hojas entintadas — y nunca en una letra. El texto vive siempre sobre una superficie opaca, y esa superficie tiene la misma fibra que el papel de la cuenca, porque si no, se nota que es una pantalla imitando papel.\n\nEste mundo rechaza dos cosas por nombre: la vitrina de librería en crema con serif, y la parrilla de portadas tipo streaming. Palsabi no es un catálogo infinito; es una selección con mano humana, y la página tiene que verse así.",
+    "keyCharacteristics": [
+      "Agua blanco papel generosa; la tinta es una isla, no un fondo",
+      "Naranja de marca saturado, siempre como superficie, jamás como letra",
+      "Cuatro registros de papel con jerarquía real, no un panel repetido",
+      "Fibra de washi en todas las superficies, con su dosis por tinta",
+      "Un solo momento de movimiento autoral: la cuenca"
+    ],
+    "rules": [
+      {
+        "name": "La regla de la tinta que no es letra",
+        "body": "#F8831D nunca lleva texto y nunca es texto. Sobre el agua da 2,3:1. Si hace falta naranja en una palabra, se usa #A34E06 en cuerpo o #C25E0A en titular grande; si hace falta texto sobre naranja, va en #16293A.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla de la gota nueva",
+        "body": "Dentro de la cuenca, la gota más reciente es siempre la más saturada, y el tinte se aclara a medida que se extiende. Nunca al revés: rompe la lectura de profundidad del agua.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla de las tres voces",
+        "body": "El sistema tiene exactamente tres registros de letra: Gabarito para lo que se anuncia, Asap para lo que se lee, y el rótulo en versalitas espaciadas para lo que se etiqueta. Si una pieza necesita una cuarta, el problema es de jerarquía, no de tipografía.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla de los cuatro escalones",
+        "body": "Por debajo del rubro solo existen cuatro tamaños de texto —entrada, guía, cuerpo, menudo— y cada uno tiene un trabajo. Un tamaño nuevo entre dos existentes no es un matiz: es la escala deshaciéndose. Esta página llegó a tener trece tamaños literales, nueve de ellos entre 0,9 y 1,1rem, y ninguno de esos nueve significaba nada distinto.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla del rótulo que no encabeza",
+        "body": "Los rótulos etiquetan (un rol, una condición, una firma). Nunca van encima de un titular haciendo de antetítulo.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla del margen quieto",
+        "body": "El texto nunca flota sobre la corriente. Todo bloque de texto se apoya en una superficie opaca. Es la regla más dura del sistema y la que más veces se intentó romper: cada vez que se rompió, hubo que volver.",
+        "section": "elevation"
+      },
+      {
+        "name": "La regla del papel único",
+        "body": "Toda superficie lleva la misma fibra de washi. El papel usa la trama clara multiplicada; las hojas entintadas usan una trama propia centrada en gris medio, aplicada con overlay y con su dosis por color (0,5 sobre azul, 0,3 sobre naranja). Multiplicar una trama clara sobre azul profundo no mueve el color: queda declarada y no se ve, que es peor que no ponerla.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do apoyar todo texto en una superficie opaca, siempre, sin excepción.",
+      "Do usar #A34E06 para naranja en texto corrido y #16293A para texto sobre naranja.",
+      "Do alinear cada sección a la medida de 1240px.",
+      "Do darle a toda superficie nueva la fibra de washi, con la trama y la dosis que le toque según sea papel o tinta.",
+      "Do dibujar los iconos como SVG con el mismo grosor de trazo.",
+      "Do guardar la fibra sin pérdida (PNG). El ruido de baja amplitud es el peor caso para la compresión con pérdida: a calidad media desaparece sin avisar y la superficie queda plana."
+    ],
+    "donts": [
+      "Don't escribir texto en #F8831D, ni en blanco sobre #F8831D.",
+      "Don't poner campos de color a sangre. Un color plano pegado sobre el agua siempre deja costura; lo que va sobre el agua son hojas, con su canto visible.",
+      "Don't volver a la cuadrícula de tres fichas iguales en la selección.",
+      "Don't usar un rótulo como antetítulo encima de un titular.",
+      "Don't apagar la cuenca entera para resolver un choque local: se mueve la tinta, no se le baja el volumen.",
+      "Don't declarar un material que no se ve. Si una textura no cambia los píxeles, o se aplica de otra forma o se quita."
+    ]
+  }
+}

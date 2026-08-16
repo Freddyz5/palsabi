@@ -1,0 +1,65 @@
+---
+import '../../../styles/global.css';
+import { SITIO } from '../constants/config';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+}
+
+const { titulo = SITIO.titulo, descripcion = SITIO.descripcion } = Astro.props;
+const canonica = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="es-EC">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonica} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#F4F2EE" />
+
+    <!-- Las portadas viven fuera (ver `data/libros.ts`) y dos de ellas son el
+         LCP del abanico: abrir la conexión antes ahorra el DNS + TLS. -->
+    <link rel="preconnect" href="https://m.media-amazon.com" crossorigin />
+    <link rel="preconnect" href="https://static.clcecuador.com" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:locale" content="es_EC" />
+    <meta property="og:site_name" content={SITIO.nombre} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <!--
+      THESIS: La tinta que se posa en el papel es la Palabra entrando en una
+      vida. La página es una hoja impresa; rechaza la vitrina de librería en
+      crema con serif y la parrilla de portadas tipo streaming.
+      OWN-WORLD: Papel #F4F2EE con fibra de washi y trama de medio tono; tintas
+      de marca — naranja #F8831D (el sello nuevo, siempre el más saturado), azul
+      #213D53, amarillo #FADA57 donde la tinta se adelgaza. Gabarito display,
+      Asap texto, rótulos en versalitas espaciadas. El texto vive siempre en
+      margen quieto de papel opaco, nunca encima de un sello.
+      STORY: El visitante entiende que Palsabi elige libros con propósito, ve
+      tres títulos reales y escribe por WhatsApp con el libro ya nombrado.
+      FIRST VIEWPORT: Papel impreso a sangre con su filete de margen; centrado,
+      margen quieto con "Libros con propósito" y el botón de WhatsApp; abajo, el
+      abanico de portadas apoyado en el canto de la pantalla.
+      FORM: Página impresa — trama de medio tono, filete de margen y sellos de
+      tinta que se posan al entrar cada sección. Sustituye a la cuenca de
+      suminagashi (seed 2097a5e2), retirada por leerse como pintura y no como
+      librería.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+    -->
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-azul focus:px-4 focus:py-3 focus:text-agua"
+      >Saltar al contenido</a
+    >
+    <slot />
+  </body>
+</html>
