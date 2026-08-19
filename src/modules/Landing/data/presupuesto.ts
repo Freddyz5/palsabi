@@ -233,7 +233,7 @@ export const FASES_PRESUPUESTO: FasePresupuesto[] = [
         nombre: 'Servicio de soporte por hora',
         // Una hora es un octavo de jornada: así el soporte sigue midiéndose
         // con la misma vara que el resto del presupuesto.
-        diasPorUnidad: 0.125,
+        diasPorUnidad: 0.25,
         inicial: 0,
         min: 0,
         max: 40,
