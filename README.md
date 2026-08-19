@@ -35,6 +35,18 @@ Los botones arman solos el mensaje; no hay que tocarlos.
 autor, la bajada que dice su portada, para quién es, la imagen y qué tinta suelta en
 la cuenca (`naranja`, `azul` o `amarillo`).
 
+## Despliegue
+
+El catálogo y el panel corren sobre esto — todo en plan gratuito, uso comercial permitido, cada cuenta a nombre del cliente:
+
+| Pieza | Dónde | Por qué |
+|---|---|---|
+| Sitio + API | [Netlify](https://netlify.com) | Node normal en las funciones, sin adaptar el backend a un runtime especial |
+| Base de datos | [Neon](https://neon.tech) (Postgres, vía Drizzle) | Se suspende sola a los 5 min sin uso y despierta en la siguiente consulta — no hay que reactivarla a mano |
+| Imágenes | [Cloudflare R2](https://developers.cloudflare.com/r2/) | 10GB gratis y sin costo de transferencia, así que ver el catálogo no gasta cuota |
+
+Ninguna de estas tres se paga desde una cuenta de Freddy: el costo (cuando lo haya) lo asume el cliente directo.
+
 ## La cuenca
 
 El fondo de la página es una simulación de fluidos de verdad corriendo en la tarjeta
