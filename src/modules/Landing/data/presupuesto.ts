@@ -225,6 +225,31 @@ export const FASES_PRESUPUESTO: FasePresupuesto[] = [
     ],
   },
   {
+    nombre: 'SEO y posicionamiento',
+    nota: 'Enfocado en que el negocio aparezca primero al buscar su nombre, no en competir por palabras genéricas.',
+    items: [
+      {
+        tipo: 'toggle',
+        id: 'seo-basico',
+        nombre: 'SEO básico',
+        dias: 2,
+        marcada: false,
+        descripcion:
+          'Título y descripción en cada página, sitemap.xml y robots.txt generados automáticamente, y datos estructurados (Schema.org) que identifican al negocio ante Google.',
+      },
+      {
+        tipo: 'toggle',
+        id: 'seo-perfil-google',
+        nombre: 'Perfil de Google y Search Console',
+        dias: 1,
+        marcada: false,
+        requiere: 'seo-basico',
+        descripcion:
+          'Verificación del sitio en Google Search Console y envío del sitemap. Configuración inicial del Perfil de Negocio en Google (nombre, dirección, horario, categoría) para aparecer en el mapa y la ficha lateral al buscar el nombre del negocio.',
+      },
+    ],
+  },
+  {
     nombre: 'Post-venta',
     items: [
       {
@@ -256,7 +281,7 @@ export const NO_INCLUYE = [
   'Redacción de textos y sesión fotográfica.',
   'Carga de contenido, salvo que se contrate la carga inicial realizada por el desarrollador.',
   'Pasarela de pagos y funcionalidades de tienda en línea.',
-  'Posicionamiento en buscadores y campañas de publicidad.',
+  'Posicionamiento por palabras clave genéricas y campañas de publicidad paga.',
 ];
 
 /** Nombre legible de cada id — para el cartel «Necesita: …» de las piezas bloqueadas. */
