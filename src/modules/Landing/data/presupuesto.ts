@@ -226,16 +226,16 @@ export const FASES_PRESUPUESTO: FasePresupuesto[] = [
   },
   {
     nombre: 'SEO y posicionamiento',
-    nota: 'Enfocado en que el negocio aparezca primero al buscar su nombre, no en competir por palabras genéricas.',
+    nota: 'SEO Técnico: corresponde únicamentea al código del sitio para que el motor de busqueda de Google pueda encontrarlo por el nombre de negocio. No incluye SEO de contenido (redacción, investigación de palabras clave, estrategia editorial). Esta sección le corresponde al administrador.',
     items: [
       {
         tipo: 'toggle',
-        id: 'seo-basico',
-        nombre: 'SEO básico',
+        id: 'seo-tecnico',
+        nombre: 'SEO Técnico',
         dias: 2,
         marcada: false,
         descripcion:
-          'Título y descripción en cada página, sitemap.xml y robots.txt generados automáticamente, y datos estructurados (Schema.org) que identifican al negocio ante Google.',
+          'Configuración técnica con el fin de que Google indexe: título y descripción optimizados en cada página, datos del negocio: nombre, tipo, ubicación.',
       },
       {
         tipo: 'toggle',
@@ -243,9 +243,9 @@ export const FASES_PRESUPUESTO: FasePresupuesto[] = [
         nombre: 'Perfil de Google y Search Console',
         dias: 1,
         marcada: false,
-        requiere: 'seo-basico',
+        requiere: 'seo-tecnico',
         descripcion:
-          'Verificación del sitio en Google Search Console y envío del sitemap. Configuración inicial del Perfil de Negocio en Google (nombre, dirección, horario, categoría) para aparecer en el mapa y la ficha lateral al buscar el nombre del negocio.',
+          'Registro en Google Search Console (herramienta de Google que confirma y rastrea el sitio) y configuración inicial del Perfil de Negocio: nombre, dirección, horario y categoría.',
       },
     ],
   },
@@ -281,6 +281,7 @@ export const NO_INCLUYE = [
   'Redacción de textos y sesión fotográfica.',
   'Carga de contenido, salvo que se contrate la carga inicial realizada por el desarrollador.',
   'Pasarela de pagos y funcionalidades de tienda en línea.',
+  'SEO de contenido: redacción, investigación de palabras clave y estrategia editorial.',
   'Posicionamiento por palabras clave genéricas y campañas de publicidad paga.',
 ];
 
