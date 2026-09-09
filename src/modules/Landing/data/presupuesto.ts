@@ -21,6 +21,12 @@
 export const TARIFA_POR_DIA = 20;
 
 /**
+ * IVA vigente en Ecuador. Se aplica sobre el subtotal de días trabajados, no
+ * sobre cada pieza: el documento muestra subtotal, IVA y total por separado.
+ */
+export const IVA = 0.15;
+
+/**
  * Datos de la carátula del documento impreso. La página se usa en la reunión;
  * el PDF es lo que se lleva el cliente, y ahí sí hacen falta las formalidades:
  * quién lo emite, para quién y hasta cuándo sostiene el precio.
