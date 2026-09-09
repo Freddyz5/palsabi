@@ -16,6 +16,7 @@ import {
   FASES_PRESUPUESTO,
   COSTOS_RECURRENTES,
   NO_INCLUYE,
+  INFORMACION_ADICIONAL,
   NOMBRE_POR_ID,
   TARIFA_POR_DIA,
   PROPUESTA,
@@ -331,6 +332,29 @@ import {
             ))
           }
         </ul>
+      </div>
+
+      <!-- Condiciones del acuerdo -->
+      <div class="margen-quieto etiqueta mt-4 px-5 py-4">
+        <p class="rotulo text-azul-suave">Información adicional</p>
+        <ol class="mt-2 space-y-1.5" style="list-style: lower-alpha inside;">
+          {
+            INFORMACION_ADICIONAL.map((punto) =>
+              typeof punto === 'string' ? (
+                <li class="font-texto text-menudo leading-relaxed text-azul/75">{punto}</li>
+              ) : (
+                <li class="font-texto text-menudo leading-relaxed text-azul/75">
+                  {punto.texto}
+                  <ul class="mt-1.5 list-disc space-y-1 pl-8">
+                    {punto.subpuntos.map((subpunto) => (
+                      <li>{subpunto}</li>
+                    ))}
+                  </ul>
+                </li>
+              ),
+            )
+          }
+        </ol>
       </div>
 
       <!-- Total -->
