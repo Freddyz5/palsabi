@@ -16,10 +16,15 @@ import {
   FASES_PRESUPUESTO,
   COSTOS_RECURRENTES,
   NO_INCLUYE,
+  INFORMACION_ADICIONAL,
   NOMBRE_POR_ID,
   TARIFA_POR_DIA,
+  IVA,
   PROPUESTA,
 } from '../modules/Landing/data/presupuesto';
+
+/** 0.15 → 15, para las etiquetas «IVA 15%» de la pantalla y del documento. */
+const PORCENTAJE_IVA = IVA * 100;
 ---
 
 <Base titulo="Cotización — Palsabi" descripcion="Landing y catálogo digital, por piezas.">
@@ -116,9 +121,19 @@ import {
             </tbody>
           ))}
           <tfoot>
+            <tr>
+              <td class="doc-concepto doc-cierre">Subtotal sin IVA</td>
+              <td id="doc-total-dias" class="doc-concepto doc-cierre doc-numero" />
+              <td id="doc-subtotal-valor" class="doc-concepto doc-cierre doc-numero" />
+            </tr>
+            <tr>
+              <td class="doc-concepto doc-cierre">IVA {PORCENTAJE_IVA}%</td>
+              <td class="doc-concepto doc-cierre doc-numero" />
+              <td id="doc-iva-valor" class="doc-concepto doc-cierre doc-numero" />
+            </tr>
             <tr class="doc-total">
               <td>Total estimado</td>
-              <td id="doc-total-dias" class="doc-numero" />
+              <td class="doc-numero" />
               <td id="doc-total-valor" class="doc-numero" />
             </tr>
           </tfoot>
@@ -303,34 +318,59 @@ import {
         </p>
       </div> -->
 
-      <!-- Costos que no son días de trabajo -->
-      <div class="margen-quieto etiqueta mt-4 px-5 py-4">
-        <p class="rotulo text-azul-suave">Costos adicionales externos</p>
-        <ul class="mt-2 space-y-1.5">
-          {
-            COSTOS_RECURRENTES.map((costo) => (
-              <li class="flex gap-2 font-texto text-menudo leading-relaxed text-azul/75">
-                <span class="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-azul-suave" />
-                <span>{costo}</span>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-
-      <!-- Lo que no entra -->
-      <div class="margen-quieto etiqueta mt-4 px-5 py-4">
-        <p class="rotulo text-azul-suave">Lo que este presupuesto no incluye</p>
-        <ul class="mt-2 space-y-1.5">
-          {
-            NO_INCLUYE.map((punto) => (
-              <li class="flex gap-2 font-texto text-menudo leading-relaxed text-azul/75">
-                <span class="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-azul-suave" />
-                <span>{punto}</span>
-              </li>
-            ))
-          }
-        </ul>
+      <div class="condiciones-contenedor">
+        <!-- Costos que no son días de trabajo -->
+        <div class="condiciones margen-quieto etiqueta mt-4 px-5 py-4">
+          <p class="rotulo text-azul-suave">Costos adicionales externos</p>
+          <ul class="mt-2 space-y-1.5">
+            {
+              COSTOS_RECURRENTES.map((costo) => (
+                <li class="flex gap-2 font-texto text-menudo leading-relaxed text-azul/75">
+                  <span class="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-azul-suave" />
+                  <span>{costo}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+  
+        <!-- Lo que no entra -->
+        <div class="condiciones margen-quieto etiqueta mt-4 px-5 py-4">
+          <p class="rotulo text-azul-suave">Lo que este presupuesto no incluye</p>
+          <ul class="mt-2 space-y-1.5">
+            {
+              NO_INCLUYE.map((punto) => (
+                <li class="flex gap-2 font-texto text-menudo leading-relaxed text-azul/75">
+                  <span class="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-azul-suave" />
+                  <span>{punto}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+  
+        <!-- Condiciones del acuerdo -->
+        <div class="condiciones margen-quieto etiqueta mt-4 px-5 py-4">
+          <p class="rotulo text-azul-suave">Información adicional</p>
+          <ol class="mt-2 space-y-1.5" style="list-style: lower-alpha inside;">
+            {
+              INFORMACION_ADICIONAL.map((punto) =>
+                typeof punto === 'string' ? (
+                  <li class="font-texto text-menudo leading-relaxed text-azul/75">{punto}</li>
+                ) : (
+                  <li class="font-texto text-menudo leading-relaxed text-azul/75">
+                    {punto.texto}
+                    <ul class="mt-1.5 list-disc space-y-1 pl-8">
+                      {punto.subpuntos.map((subpunto) => (
+                        <li>{subpunto}</li>
+                      ))}
+                    </ul>
+                  </li>
+                ),
+              )
+            }
+          </ol>
+        </div>
       </div>
 
       <!-- Total -->
@@ -338,6 +378,7 @@ import {
         <div class="relative">
           <p id="resumen-cantidad" class="font-texto text-[0.7rem] font-500 uppercase tracking-wide text-agua/60" />
           <p id="resumen-precio" class="mt-1 font-display text-rubro font-700 text-agua" />
+          <p id="resumen-desglose" class="mt-0.5 font-texto text-[0.7rem] font-500 text-agua/60" />
         </div>
         <span class="relative shrink-0 rounded-full bg-naranja px-4 py-2 font-display text-menudo font-600 text-azul-hondo">
           Total estimado
@@ -475,6 +516,10 @@ import {
     font-weight: 600;
     border-bottom: 1.5px solid color-mix(in srgb, var(--color-azul) 25%, transparent);
   }
+  /* Subtotal e IVA: cierran la tabla antes de la fila oscura del total. */
+  .doc-cierre {
+    font-weight: 600;
+  }
   .doc-total td {
     padding: 0.7rem 0.9rem;
     background: var(--color-azul-hondo);
@@ -539,10 +584,77 @@ import {
       print-color-adjust: exact;
     }
 
-    /* Ni una fase ni un bloque de condiciones se parten entre dos hojas. */
-    [data-doc-fase],
-    .margen-quieto {
+    /*
+     * Una fase no se parte entre dos hojas. Los paneles de condiciones sí
+     * pueden partirse: con `break-inside: avoid` el panel largo se iba entero
+     * a la hoja siguiente y dejaba media página en blanco. Lo que no se parte
+     * es cada punto suelto.
+     */
+    [data-doc-fase] {
       break-inside: avoid;
+    }
+    .condiciones li {
+      break-inside: avoid;
+    }
+
+    /*
+     * Hoja 1: carátula, detalle y total, siempre juntos. Sin este corte, con
+     * muchas piezas marcadas el detalle se derramaba a la hoja siguiente y el
+     * navegador repetía el pie de la tabla: el total salía en la primera hoja
+     * antes de haber listado todas las fases — justo lo que no puede pasar en
+     * un documento que se firma.
+     */
+    #documento {
+      break-after: page;
+    }
+
+    /* La carátula cede altura para que el detalle completo quepa debajo. */
+    #contenido {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+    #contenido > div > h1 {
+      margin-top: 0.4rem;
+      font-size: 1.5rem;
+    }
+
+    /* Detalle apretado: hoy pueden marcarse hasta 22 filas y deben caber. */
+    .doc-concepto {
+      padding: 0.5rem 0;
+      font-size: 0.78rem;
+      line-height: 1.3;
+    }
+    .doc-fase {
+      padding: 0.5rem 0 0.15rem;
+      font-size: 0.88rem;
+    }
+    .doc-total td {
+      padding: 0.45rem 0.9rem;
+    }
+
+    /*
+     * Hoja 2: las tres tarjetas de condiciones y las firmas. A una columna no
+     * entraban ni de lejos; a dos entran con la letra todavía legible, que es
+     * mejor que achicarla hasta que no se pueda leer lo que se firma.
+     */
+    .condiciones-contenedor {
+      margin-top: 4rem;
+    }
+    .condiciones {
+      margin-top: 1.4rem;
+      padding: 0.65rem 0.85rem;
+      columns: 2;
+      column-gap: 1rem;
+    }
+    .condiciones .rotulo {
+      column-span: all;
+    }
+    .condiciones :is(li, p):not(.rotulo) {
+      font-size: 0.72rem !important;
+      line-height: 1.35 !important;
+    }
+    .condiciones :is(ul, ol) > li + li {
+      margin-top: 0.28rem !important;
     }
 
     @page {
@@ -551,9 +663,10 @@ import {
   }
 </style>
 
-<script define:vars={{ tarifa: TARIFA_POR_DIA }}>
+<script define:vars={{ tarifa: TARIFA_POR_DIA, iva: IVA }}>
   const elCantidad = document.getElementById('resumen-cantidad');
   const elPrecio = document.getElementById('resumen-precio');
+  const elDesglose = document.getElementById('resumen-desglose');
   const botonImprimir = document.getElementById('imprimir');
   const botonGuardar = document.getElementById('guardar');
   const textoGuardar = document.getElementById('guardar-texto');
@@ -562,6 +675,8 @@ import {
   const cuerposDoc = Array.from(document.querySelectorAll('[data-doc-fase]'));
   const elDocTotalDias = document.getElementById('doc-total-dias');
   const elDocTotalValor = document.getElementById('doc-total-valor');
+  const elDocSubtotalValor = document.getElementById('doc-subtotal-valor');
+  const elDocIvaValor = document.getElementById('doc-iva-valor');
 
   /** Detalle de lo elegido, en orden de página. Lo arma recalcular(). */
   let resumen = [];
@@ -594,6 +709,16 @@ import {
   // otro. No agrega ceros de más: 2 sigue siendo «2» y 0,75 sigue siendo «0,75».
   function fmtDias(n) {
     return n.toLocaleString('es-EC', { maximumFractionDigits: 3 });
+  }
+  // El IVA se redondea a centavos antes de sumarlo, y el total se arma con ese
+  // valor ya redondeado: así las tres líneas del documento cuadran a la vista.
+  // Calculándolo sobre el bruto, el total mostraría un centavo que las líneas
+  // de arriba no explican — y el documento se firma.
+  function desglosar(dias) {
+    const centavos = (n) => Math.round(n * 100) / 100;
+    const subtotal = centavos(dias * tarifa);
+    const montoIva = centavos(subtotal * iva);
+    return { subtotal, montoIva, total: centavos(subtotal + montoIva) };
   }
   function etiquetaDias(n) {
     return n === 1 ? 'día' : 'días';
@@ -761,8 +886,12 @@ import {
       const etiquetaPieza = cantidad === 1 ? 'pieza elegida' : 'piezas elegidas';
       elCantidad.textContent = `${cantidad} ${etiquetaPieza} · ${fmtDias(dias)} ${etiquetaDias(dias)}`;
     }
+    const totales = desglosar(dias);
     if (elPrecio) {
-      elPrecio.textContent = `$${fmt(dias * tarifa)}`;
+      elPrecio.textContent = `$${fmt(totales.total)}`;
+    }
+    if (elDesglose) {
+      elDesglose.textContent = `Subtotal $${fmt(totales.subtotal)} · IVA ${fmt(iva * 100)}% $${fmt(totales.montoIva)}`;
     }
 
     sincronizarUrl();
@@ -900,8 +1029,11 @@ import {
       }
     });
 
-    if (elDocTotalDias) elDocTotalDias.textContent = `${fmtDias(totalDias)} ${etiquetaDias(totalDias)}`;
-    if (elDocTotalValor) elDocTotalValor.textContent = `$${fmt(totalDias * tarifa)}`;
+    const totales = desglosar(totalDias);
+    if (elDocTotalDias) elDocTotalDias.textContent = fmtDias(totalDias);
+    if (elDocSubtotalValor) elDocSubtotalValor.textContent = `$${fmt(totales.subtotal)}`;
+    if (elDocIvaValor) elDocIvaValor.textContent = `$${fmt(totales.montoIva)}`;
+    if (elDocTotalValor) elDocTotalValor.textContent = `$${fmt(totales.total)}`;
   }
 
   function avisar(texto) {
