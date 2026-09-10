@@ -140,11 +140,11 @@ export const FASES_PRESUPUESTO: FasePresupuesto[] = [
         dias: 8,
         marcada: true,
         descripcion:
-          'Buscador, filtros por categoría, ficha de cada libro, estados de stock y pedido por WhatsApp — con datos reales en base de datos, no de muestra.',
+          'Buscador, filtros por categoría, ficha de cada libro, estados de stock y pedido por WhatsApp.',
         variantes: {
           'carga-panel': 'La actualización y carga de libros al panel, lo realiza el cliente.',
           'carga-planilla': 'Los libros salen de una planilla que ustedes editan.',
-          'carga-inicial': 'Los libros los dejo cargados yo una vez; después el catálogo queda fijo.',
+          'carga-inicial': 'Primer y único ingreso de sera realizado por el desarrollador.',
         },
       },
       {
@@ -259,7 +259,7 @@ export const FASES_PRESUPUESTO: FasePresupuesto[] = [
 /** Costos que corren por cuenta del cliente: no son días de trabajo del desarrollador. */
 export const COSTOS_RECURRENTES = [
   'Dominio: aproximadamente $25 al año, contratado a nombre del cliente.',
-  'Hosting y base de datos: el catálogo con panel de administración requiere un servidor activo. Se contrata a nombre del cliente y se factura mensualmente. El valor depende del mercado.',
+  'Hosting y base de datos: el catálogo con panel de administración requiere un servidor activo. La contratación se realiza a nombre del cliente y su facturación es mensual. El valor depende del mercado.',
 ];
 
 /** Lo que el presupuesto no cubre. Los presupuestos se pelean por lo que no dicen. */
@@ -279,17 +279,23 @@ export const INFORMACION_ADICIONAL: (
   | string
   | { texto: string; subpuntos: string[] }
 )[] = [
-  'Los precios indicados en este documento son promocionales, incluye servicio de mantenimiento del sitio web por $5 la hora durante un año contando desde la fecha de entrega; posterior el valor es de $20,00 la hora. Los valores por ítem no incluyen IVA; el total lo desglosa por separado. El mantenimiento incluye corrección de errores del desarrollo, actualización de contenido ya existente (textos, imágenes, precios, disponibilidad de libros) y ajustes menores de estilo. No incluye el desarrollo de funcionalidades nuevas, secciones adicionales, integraciones o cambios estructurales no contemplados en esta cotización; estos se cotizan aparte, a la tarifa de proyecto vigente.',
-  'Autorizo, al desarrollador a hacer uso del código fuente de este sitio web como base, plantilla o referencia técnica para el desarrollo de futuros proyectos de otros clientes.',
-  'Esta autorización se limita exclusivamente a la estructura, lógica y componentes técnicos del código. No incluye nombre comercial, marca, logotipo, contenidos, textos, imágenes, base de datos, ni ningún elemento de identidad propia de PALSABI, los cuales permanecen de su uso exclusivo y confidencial. El desarrollador se compromete a no divulgar información comercial y sensible del cliente.',
+  'Los precios indicados en este documento son promocionales, incluye servicio de mantenimiento del sitio web por $5 la hora durante un año contando desde la fecha de entrega; posterior el valor es de $20,00 la hora. Los valores por ítem no incluyen IVA; el calculo se realiza en al impresión de la cotización. El mantenimiento incluye corrección de errores de desarrollo, actualización de contenido ya existente (textos, imágenes, precios, disponibilidad de libros) y ajustes menores de estilo. No incluye el desarrollo de funcionalidades nuevas, secciones adicionales, integraciones o cambios estructurales no contemplados en esta cotización.',
+  'Autorizo, al desarrollador a hacer uso del código fuente de este sitio web como base, plantilla o referencia técnica para el desarrollo de futuros proyectos de otros clientes. Esta autorización se limita exclusivamente a la estructura, lógica y componentes técnicos del código. No incluye nombre comercial, marca, logotipo, contenidos, textos, imágenes, base de datos, ni ningún elemento de identidad propia de PALSABI, los cuales permanecen de su uso exclusivo y confidencial. El desarrollador se compromete a no divulgar información comercial y sensible del cliente.',
   'El catálogo está diseñado y estructurado para escalar según la necesidad del cliente a una tienda en línea; se requiere realizar una nueva cotización.',
-  'Si en el futuro se contratan nuevos módulos o funcionalidades mediante una cotización adicional, el mantenimiento de esos módulos se define en esa nueva cotización y no hereda automáticamente las condiciones de este documento.',
   {
     texto: 'Métodos de pago:',
     subpuntos: [
       'Efectivo o transferencia: 50% primer pago, y 50% contra entrega.',
       'Efectivo o transferencia por acuerdo: 40% primer pago inicial, 30% segundo pago, 30% tercer pago.',
       'T/C: Payphone, un solo pago y difiérelo en tu banco.',
+    ],
+  },
+  {
+    texto: 'Tiempos de entrega y participación del cliente:',
+    subpuntos: [
+      'El desarrollador se compromete a entregar los avances en los tiempos acordados contados en días hábiles.',
+      'Los avances del proyecto dependeran de la disponibilidad del cliente para la entrega de material, revisiones y aprobaciones.',
+      'Si la espera por una revisión, aprobación o entrega de material supera los 15 días hábiles, el proyecto se considera en pausa y su reanudación queda sujeta a la disponibilidad de agenda del desarrollador.',
     ],
   },
   'Se incluyen 2 rondas de revisión: la propuesta inicial, un primer cambio solicitado sobre esa propuesta, y un segundo ajuste. Cambios adicionales fuera de estas rondas se cobran por hora según la tarifa vigente.',
