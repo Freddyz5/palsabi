@@ -2,7 +2,8 @@
 /**
  * Presupuesto interactivo — landing + catálogo digital, armado como piezas
  * de lego: cada una suma o resta del total según se marque o no. La tarifa
- * por día no se toca desde acá: vive en TARIFA_POR_DIA, en los datos. Es una
+ * por día no se toca desde acá: vive en TARIFA_POR_DIA, en los datos, igual
+ * que el `precioFijo` de las fases que se cotizan cerradas. Es una
  * herramienta para la reunión, no una página del sitio público: no está
  * enlazada desde la navegación.
  *
@@ -114,7 +115,7 @@ const PORCENTAJE_IVA = IVA * 100;
                     ],
               )}
               <tr data-doc-subtotal>
-                <td class="doc-concepto doc-subtotal">Subtotal</td>
+                <td data-doc-subtotal-rotulo class="doc-concepto doc-subtotal">Subtotal</td>
                 <td data-doc-dias class="doc-concepto doc-numero doc-subtotal" />
                 <td data-doc-valor class="doc-concepto doc-numero doc-subtotal" />
               </tr>
@@ -147,9 +148,19 @@ const PORCENTAJE_IVA = IVA * 100;
       <!-- Piezas. En el documento impreso las reemplaza la tabla de detalle. -->
       <div class="solo-pantalla">
       {
-        FASES_PRESUPUESTO.map((fase) => (
+        FASES_PRESUPUESTO.map((fase, indiceFase) => (
           <div class="mt-8">
-            <p class="rotulo text-azul-suave">{fase.nombre}</p>
+            <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <p class="rotulo text-azul-suave">{fase.nombre}</p>
+              {fase.precioFijo != null && (
+                <p
+                  data-fase-precio={indiceFase}
+                  class="shrink-0 font-texto text-menudo font-600 text-azul"
+                >
+                  Precio cerrado · ${fase.precioFijo}
+                </p>
+              )}
+            </div>
             {fase.nota && (
               <p class="mt-1.5 font-texto text-menudo leading-relaxed text-azul-suave/85">{fase.nota}</p>
             )}
@@ -160,6 +171,7 @@ const PORCENTAJE_IVA = IVA * 100;
                     type="button"
                     data-item
                     data-tipo="toggle"
+                    data-fase={indiceFase}
                     data-id={item.id}
                     data-nombre={item.nombre}
                     data-dias={item.dias}
@@ -200,6 +212,7 @@ const PORCENTAJE_IVA = IVA * 100;
                   <div
                     data-item
                     data-tipo="contador"
+                    data-fase={indiceFase}
                     data-id={item.id}
                     data-nombre={item.nombre}
                     data-dias-unidad={item.diasPorUnidad}
@@ -252,6 +265,7 @@ const PORCENTAJE_IVA = IVA * 100;
                   <div
                     data-item
                     data-tipo="grupo"
+                    data-fase={indiceFase}
                     data-id={item.id}
                     data-inicial={item.inicial}
                     data-requiere={item.requiere}
@@ -307,16 +321,6 @@ const PORCENTAJE_IVA = IVA * 100;
         ))
       }
       </div>
-
-      <!-- Tienda con pagos, teaser -->
-      <!-- <div class="margen-quieto mt-8 rounded-2xl border-[1.5px] border-dashed border-azul/25 px-5 py-4">
-        <p class="rotulo text-azul-suave">Etapa posterior · Tienda en línea</p>
-        <p class="mt-1.5 font-texto text-menudo leading-relaxed text-azul/70">
-          Se contempla iniciar con transferencia bancaria y DeUna, incorporar PayPhone en una segunda
-          instancia y evaluar Kushki o Datafast según el volumen de ventas. Esta etapa se cotiza por
-          separado una vez definida la pasarela y no forma parte del total.
-        </p>
-      </div> -->
 
       <div class="condiciones-contenedor">
         <!-- Costos que no son días de trabajo -->
@@ -663,7 +667,13 @@ const PORCENTAJE_IVA = IVA * 100;
   }
 </style>
 
-<script define:vars={{ tarifa: TARIFA_POR_DIA, iva: IVA }}>
+<script
+  define:vars={{
+    tarifa: TARIFA_POR_DIA,
+    iva: IVA,
+    preciosFijos: FASES_PRESUPUESTO.map((fase) => fase.precioFijo ?? null),
+  }}
+>
   const elCantidad = document.getElementById('resumen-cantidad');
   const elPrecio = document.getElementById('resumen-precio');
   const elDesglose = document.getElementById('resumen-desglose');
@@ -681,6 +691,8 @@ const PORCENTAJE_IVA = IVA * 100;
   /** Detalle de lo elegido, en orden de página. Lo arma recalcular(). */
   let resumen = [];
   let totalDias = 0;
+  /** Subtotal sin IVA ya resuelto: días × tarifa, más las fases de precio cerrado. */
+  let subtotalBase = 0;
 
   const items = Array.from(document.querySelectorAll('[data-item]'));
   const toggles = items.filter((el) => el.dataset.tipo === 'toggle');
@@ -688,6 +700,8 @@ const PORCENTAJE_IVA = IVA * 100;
   const grupos = items.filter((el) => el.dataset.tipo === 'grupo');
   const opciones = Array.from(document.querySelectorAll('[data-opcion]'));
   const variantes = Array.from(document.querySelectorAll('[data-variante]'));
+  /** Carteles «Precio cerrado · $X» del encabezado de cada fase cotizada así. */
+  const carteles = Array.from(document.querySelectorAll('[data-fase-precio]'));
 
   /** id → elemento, para resolver los `requiere` sin buscar en el DOM cada vez. */
   const porId = new Map(items.map((el) => [el.dataset.id, el]));
@@ -714,14 +728,24 @@ const PORCENTAJE_IVA = IVA * 100;
   // valor ya redondeado: así las tres líneas del documento cuadran a la vista.
   // Calculándolo sobre el bruto, el total mostraría un centavo que las líneas
   // de arriba no explican — y el documento se firma.
-  function desglosar(dias) {
+  function desglosar(base) {
     const centavos = (n) => Math.round(n * 100) / 100;
-    const subtotal = centavos(dias * tarifa);
+    const subtotal = centavos(base);
     const montoIva = centavos(subtotal * iva);
     return { subtotal, montoIva, total: centavos(subtotal + montoIva) };
   }
   function etiquetaDias(n) {
     return n === 1 ? 'día' : 'días';
+  }
+
+  function faseFija(indiceFase) {
+    return preciosFijos[indiceFase] != null;
+  }
+  // En una fase de precio cerrado la pieza muestra días pero no importe: el
+  // valor no sale de sumar sus piezas, y un importe al lado invita a sumarlo.
+  function lineaPrecio(dias, indiceFase) {
+    const base = `${fmtDias(dias)} ${etiquetaDias(dias)}`;
+    return faseFija(indiceFase) ? base : `${base} · $${fmt(dias * tarifa)}`;
   }
 
   /**
@@ -760,6 +784,10 @@ const PORCENTAJE_IVA = IVA * 100;
   function recalcular() {
     let dias = 0;
     let cantidad = 0;
+    // Por fase, para que las de precio cerrado cobren su monto entero y las
+    // demás sigan cobrándose por día.
+    const diasPorFase = preciosFijos.map(() => 0);
+    const activasPorFase = preciosFijos.map(() => false);
 
     // Toggles. Al perder su requisito se destildan solos, y no se vuelven a
     // marcar cuando el requisito regresa: eso lo decide el cliente.
@@ -772,11 +800,14 @@ const PORCENTAJE_IVA = IVA * 100;
       pintarBloqueo(el, libre);
 
       const diasPieza = Number(el.dataset.dias || 0);
+      const indiceFase = Number(el.dataset.fase || 0);
       const linea = el.querySelector('[data-precio-linea]');
-      if (linea) linea.textContent = `${fmtDias(diasPieza)} ${etiquetaDias(diasPieza)} · $${fmt(diasPieza * tarifa)}`;
+      if (linea) linea.textContent = lineaPrecio(diasPieza, indiceFase);
 
       if (marcada) {
         dias += diasPieza;
+        diasPorFase[indiceFase] += diasPieza;
+        activasPorFase[indiceFase] = true;
         cantidad += 1;
       }
     });
@@ -786,6 +817,7 @@ const PORCENTAJE_IVA = IVA * 100;
       const libre = disponible(el.dataset.id);
       if (!libre) el.dataset.valor = '0';
       const valor = Number(el.dataset.valor || 0);
+      const indiceFase = Number(el.dataset.fase || 0);
       const porUnidad = Number(el.dataset.diasUnidad || 0);
       const min = Number(el.dataset.min || 0);
       const max = Number(el.dataset.max || 0);
@@ -808,11 +840,13 @@ const PORCENTAJE_IVA = IVA * 100;
         linea.textContent =
           valor === 0
             ? `${fmtDias(porUnidad)} ${etiquetaDias(porUnidad)} c/u`
-            : `${valor} ${unidad} · ${fmtDias(diasPieza)} ${etiquetaDias(diasPieza)} · $${fmt(diasPieza * tarifa)}`;
+            : `${valor} ${unidad} · ${lineaPrecio(diasPieza, indiceFase)}`;
       }
 
       if (valor > 0) {
         dias += diasPieza;
+        diasPorFase[indiceFase] += diasPieza;
+        activasPorFase[indiceFase] = true;
         cantidad += 1;
       }
     });
@@ -831,11 +865,14 @@ const PORCENTAJE_IVA = IVA * 100;
       el.classList.toggle('opcion-activa', elegida);
 
       const diasOpcion = Number(el.dataset.dias || 0);
+      const indiceFase = Number(porId.get(el.dataset.grupo)?.dataset.fase || 0);
       const linea = el.querySelector('[data-precio-linea]');
-      if (linea) linea.textContent = `${fmtDias(diasOpcion)} ${etiquetaDias(diasOpcion)} · $${fmt(diasOpcion * tarifa)}`;
+      if (linea) linea.textContent = lineaPrecio(diasOpcion, indiceFase);
 
       if (elegida && opcionesActivas.has(el.dataset.id)) {
         dias += diasOpcion;
+        diasPorFase[indiceFase] += diasOpcion;
+        activasPorFase[indiceFase] = true;
         cantidad += 1;
       }
     });
@@ -880,13 +917,27 @@ const PORCENTAJE_IVA = IVA * 100;
       }
     });
 
+    // Una fase cerrada aporta su monto entero mientras tenga algo elegido; si
+    // quedó vacía o bloqueada no aporta nada, como cualquier otra pieza.
+    subtotalBase = preciosFijos.reduce(
+      (suma, fijo, indice) =>
+        fijo == null
+          ? suma + diasPorFase[indice] * tarifa
+          : suma + (activasPorFase[indice] ? fijo : 0),
+      0,
+    );
+
+    carteles.forEach((el) => {
+      el.hidden = !activasPorFase[Number(el.dataset.fasePrecio)];
+    });
+
     pintarDocumento();
 
     if (elCantidad) {
       const etiquetaPieza = cantidad === 1 ? 'pieza elegida' : 'piezas elegidas';
       elCantidad.textContent = `${cantidad} ${etiquetaPieza} · ${fmtDias(dias)} ${etiquetaDias(dias)}`;
     }
-    const totales = desglosar(dias);
+    const totales = desglosar(subtotalBase);
     if (elPrecio) {
       elPrecio.textContent = `$${fmt(totales.total)}`;
     }
@@ -1002,7 +1053,7 @@ const PORCENTAJE_IVA = IVA * 100;
   function pintarDocumento() {
     const elegido = new Map(resumen.map((r) => [r.id, r]));
 
-    cuerposDoc.forEach((cuerpo) => {
+    cuerposDoc.forEach((cuerpo, indiceFase) => {
       let diasFase = 0;
       let visibles = 0;
 
@@ -1017,19 +1068,25 @@ const PORCENTAJE_IVA = IVA * 100;
         const cantidad = fila.querySelector('[data-doc-cantidad]');
         if (cantidad) cantidad.textContent = dato.cantidad > 1 ? ` ×${dato.cantidad}` : '';
         fila.querySelector('[data-doc-dias]').textContent = fmtDias(dato.dias);
-        fila.querySelector('[data-doc-valor]').textContent = `$${fmt(dato.dias * tarifa)}`;
+        fila.querySelector('[data-doc-valor]').textContent = faseFija(indiceFase)
+          ? '—'
+          : `$${fmt(dato.dias * tarifa)}`;
       });
 
       cuerpo.hidden = visibles === 0;
 
       const subtotal = cuerpo.querySelector('[data-doc-subtotal]');
       if (subtotal) {
+        const fija = faseFija(indiceFase);
+        const rotulo = subtotal.querySelector('[data-doc-subtotal-rotulo]');
+        if (rotulo) rotulo.textContent = fija ? 'Precio cerrado' : 'Subtotal';
         subtotal.querySelector('[data-doc-dias]').textContent = fmtDias(diasFase);
-        subtotal.querySelector('[data-doc-valor]').textContent = `$${fmt(diasFase * tarifa)}`;
+        subtotal.querySelector('[data-doc-valor]').textContent =
+          `$${fmt(fija ? preciosFijos[indiceFase] : diasFase * tarifa)}`;
       }
     });
 
-    const totales = desglosar(totalDias);
+    const totales = desglosar(subtotalBase);
     if (elDocTotalDias) elDocTotalDias.textContent = fmtDias(totalDias);
     if (elDocSubtotalValor) elDocSubtotalValor.textContent = `$${fmt(totales.subtotal)}`;
     if (elDocIvaValor) elDocIvaValor.textContent = `$${fmt(totales.montoIva)}`;

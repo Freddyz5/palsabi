@@ -1,6 +1,7 @@
 /**
- * Piezas del presupuesto — landing + catálogo digital. El precio se calcula
- * como días × tarifa, y la tarifa se ajusta acá abajo. Hay tres tipos de pieza:
+ * Piezas del presupuesto — landing, catálogo digital y tienda en línea. El precio se calcula
+ * como días × tarifa, y la tarifa se ajusta acá abajo, salvo en las fases con
+ * `precioFijo`, que se cotizan cerradas. Hay tres tipos de pieza:
  *
  *   toggle    — se marca o no (lo de siempre).
  *   contador  — cantidad variable: secciones extra, páginas nuevas.
@@ -13,8 +14,9 @@
  * `requiere` apunta al id de un toggle o de una opción, y se hace cumplir de
  * verdad: si el requisito no está activo, la pieza se bloquea y no suma.
  *
- * La tienda con pagos no vive aquí a propósito: todavía no hay pasarela
- * decidida, así que no tiene sentido ponerle días.
+ * La tienda sí vive acá, pero con cobro manual: comprobante de transferencia o
+ * DeUna revisado por el dueño. La pasarela con tarjeta sigue afuera porque
+ * todavía no hay proveedor decidido, y sin eso no tiene sentido ponerle días.
  */
 
 /** Tarifa por jornada de trabajo. Se cambia acá, no desde la página. */
@@ -85,6 +87,14 @@ export type ItemPresupuesto = PiezaToggle | PiezaContador | GrupoOpcion;
 export interface FasePresupuesto {
   nombre: string;
   nota?: string;
+  /**
+   * Precio cerrado de la fase, sin IVA. Cuando está, manda sobre la tarifa:
+   * la fase entera vale esto mientras tenga al menos una pieza activa, y da
+   * cero cuando no hay nada elegido. Los días de sus piezas se siguen sumando
+   * al plazo — son trabajo real — pero ya no deciden el valor, así que las
+   * líneas de precio por pieza se apagan: sumarlas no daría este número.
+   */
+  precioFijo?: number;
   items: ItemPresupuesto[];
 }
 
@@ -211,6 +221,23 @@ export const FASES_PRESUPUESTO: FasePresupuesto[] = [
     ],
   },
   {
+    nombre: 'Fase 3 · Tienda en línea',
+    precioFijo: 350,
+    nota: 'Precio cerrado: esta fase se cotiza en $350 más IVA. Los días siguen a la vista porque definen el plazo de entrega, no el valor.',
+    items: [
+      {
+        tipo: 'toggle',
+        id: 'tienda-base',
+        nombre: 'Carrito y pedidos',
+        dias: 12,
+        marcada: true,
+        requiere: 'catalogo-base',
+        descripcion:
+          'Carrito de compra, checkout sin necesidad de cuenta, pedido con estados (pendiente de pago, pagado, preparando, entregado, cancelado), descuento de stock al marcar como pagado, panel de administración de pedidos, y aviso automático por WhatsApp al dueño y al cliente en cada cambio de estado.',
+      },
+    ],
+  },
+  {
     nombre: 'SEO y posicionamiento',
     nota: 'SEO Técnico: corresponde únicamentea al código del sitio para que el motor de busqueda de Google pueda encontrarlo por el nombre de negocio. No incluye SEO de contenido (redacción, investigación de palabras clave, estrategia editorial). Esta sección le corresponde al administrador.',
     items: [
@@ -266,7 +293,7 @@ export const COSTOS_RECURRENTES = [
 export const NO_INCLUYE = [
   'Redacción de textos y sesión fotográfica.',
   'Carga de contenido, salvo que se contrate la carga inicial realizada por el desarrollador.',
-  'Pasarela de pagos y funcionalidades de tienda en línea.',
+  'Pasarela de pago con tarjeta (PayPhone/Kushki/Datafast) — se cotiza aparte según volumen de ventas.',
   'SEO de contenido: redacción, investigación de palabras clave y estrategia editorial.',
   'Posicionamiento por palabras clave genéricas y campañas de publicidad paga.',
 ];
